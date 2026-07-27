@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Luminatti · Portal do Cliente — proposta visual</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+:root{
+  /* marca */
+  --amarelo:#FCC972;
+  --amarelo-suave:#FFF3DF;
+  --amarelo-linha:#F4B84E;
+  --cinza:#585857;
+  --preto:#1D1D1B;
+  --branco:#ffffff;
+
+  /* neutros de interface */
+  --n-000:#ffffff;
+  --n-050:#FAFAF9;
+  --n-100:#F4F4F2;
+  --n-200:#EAEAE7;
+  --n-300:#DEDEDA;
+  --n-400:#B9B9B4;
+  --n-500:#8C8C88;
+
+  /* semânticos (dessaturados, para não brigar com a marca) */
+  --ok:#2E7D5B;      --ok-bg:#EAF5EF;
+  --alerta:#B4741A;  --alerta-bg:#FDF3E3;
+  --erro:#B03A2E;    --erro-bg:#FBEDEB;
+  --info:#356B8F;    --info-bg:#EBF2F7;
+
+  --raio:10px;
+  --raio-sm:7px;
+  --sombra:0 1px 2px rgba(29,29,27,.04), 0 8px 24px rgba(29,29,27,.06);
+  --sombra-sm:0 1px 2px rgba(29,29,27,.05);
+  --sidebar-w:250px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Montserrat',Arial,sans-serif;
+  background:var(--n-100);
+  color:var(--preto);
+  font-size:13.5px;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select{font-family:inherit;font-size:inherit;color:inherit}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--n-300);border-radius:20px;border:3px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:var(--n-400);background-clip:content-box;border:3px solid transparent}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ================= LAYOUT ================= */
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* ---- SIDEBAR ---- */
+.sidebar{
+  width:var(--sidebar-w);flex:0 0 var(--sidebar-w);
+  background:var(--branco);border-right:1px solid var(--n-200);
+  display:flex;flex-direction:column;transition:width .22s ease, flex-basis .22s ease;
+}
+.sidebar__brand{
+  display:flex;flex-direction:column;align-items:flex-start;gap:9px;
+  padding:20px 20px 16px;border-bottom:1px solid var(--n-200);
+}
+.sidebar__brand img{height:34px;width:auto;display:block}
+.sidebar__brand .portal{
+  font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--cinza);
+  line-height:1.25;font-weight:600;padding-left:1px;
+}
+.sidebar__section{padding:18px 14px 6px;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--n-500);font-weight:600}
+.nav{padding:0 10px;display:flex;flex-direction:column;gap:2px}
+.nav__item{
+  display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:var(--raio-sm);
+  color:var(--cinza);font-weight:500;font-size:13px;text-align:left;width:100%;position:relative;
+  transition:background .15s,color .15s;
+}
+.nav__item svg{width:17px;height:17px;flex:0 0 17px;stroke-width:1.7}
+.nav__item:hover{background:var(--n-100);color:var(--preto)}
+.nav__item.is-active{background:var(--amarelo-suave);color:var(--preto);font-weight:600}
+.nav__item.is-active::before{
+  content:"";position:absolute;left:-10px;top:7px;bottom:7px;width:3px;
+  background:var(--amarelo-linha);border-radius:0 3px 3px 0;
+}
+.nav__badge{margin-left:auto;font-size:10.5px;font-weight:600;color:var(--cinza);background:var(--n-100);padding:1px 7px;border-radius:20px}
+.nav__item.is-active .nav__badge{background:var(--branco)}
+.nav__badge--alerta{background:var(--erro-bg);color:var(--erro)}
+
+.sidebar__foot{margin-top:auto;padding:12px;border-top:1px solid var(--n-200)}
+.user{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:var(--raio-sm);width:100%}
+.user:hover{background:var(--n-100)}
+.avatar{
+  width:32px;height:32px;flex:0 0 32px;border-radius:50%;background:var(--preto);color:var(--amarelo);
+  display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px;
+}
+.user__info{text-align:left;overflow:hidden}
+.user__name{font-weight:600;font-size:12.5px;line-height:1.2}
+.user__mail{font-size:10.5px;color:var(--n-500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---- MAIN ---- */
+.main{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--n-100)}
+.topbar{
+  height:66px;flex:0 0 66px;background:var(--branco);border-bottom:1px solid var(--n-200);
+  display:flex;align-items:center;gap:16px;padding:0 24px;
+}
+.crumb{font-size:11px;color:var(--n-500);font-weight:500;margin-bottom:2px}
+.topbar h1{font-size:17px;font-weight:600;letter-spacing:-.01em;line-height:1.15}
+.topbar__spacer{flex:1}
+.search{
+  display:flex;align-items:center;gap:9px;background:var(--n-100);border:1px solid transparent;
+  border-radius:var(--raio-sm);padding:8px 12px;width:300px;transition:.15s;
+}
+.search:focus-within{background:var(--branco);border-color:var(--amarelo-linha);box-shadow:0 0 0 3px var(--amarelo-suave)}
+.search input{border:none;background:none;outline:none;width:100%;font-size:13px}
+.search svg{width:15px;height:15px;color:var(--n-500);flex:0 0 15px}
+.search kbd{
+  font-family:inherit;font-size:9.5px;color:var(--n-500);background:var(--branco);
+  border:1px solid var(--n-300);border-radius:4px;padding:2px 5px;font-weight:600;
+}
+.icon-btn{
+  width:34px;height:34px;border-radius:var(--raio-sm);display:flex;align-items:center;justify-content:center;
+  color:var(--cinza);position:relative;transition:.15s;
+}
+.icon-btn:hover{background:var(--n-100);color:var(--preto)}
+.icon-btn svg{width:17px;height:17px;stroke-width:1.7}
+.icon-btn .dot{position:absolute;top:7px;right:8px;width:6px;height:6px;border-radius:50%;background:var(--erro);border:1.5px solid var(--branco)}
+
+.content{flex:1;overflow-y:auto;padding:22px 24px 40px}
+.page{display:none}
+.page.is-active{display:block;animation:fade .22s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ================= BOTÕES ================= */
+.btn{
+  display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:var(--raio-sm);
+  font-weight:600;font-size:12.5px;border:1px solid var(--n-300);background:var(--branco);color:var(--preto);
+  transition:.15s;white-space:nowrap;
+}
+.btn:hover{border-color:var(--n-400);background:var(--n-050)}
+.btn svg{width:15px;height:15px;stroke-width:1.8}
+.btn--primary{background:var(--preto);border-color:var(--preto);color:var(--branco)}
+.btn--primary:hover{background:#000;border-color:#000}
+.btn--acento{background:var(--amarelo);border-color:var(--amarelo);color:var(--preto)}
+.btn--acento:hover{background:var(--amarelo-linha);border-color:var(--amarelo-linha)}
+.btn--ghost{border-color:transparent;background:transparent;color:var(--cinza)}
+.btn--ghost:hover{background:var(--n-200);color:var(--preto)}
+.btn--sm{padding:6px 10px;font-size:11.5px}
+
+/* ================= FILTROS ================= */
+.filtros{
+  background:var(--branco);border:1px solid var(--n-200);border-radius:var(--raio);
+  box-shadow:var(--sombra-sm);margin-bottom:16px;overflow:hidden;
+}
+.filtros__linha{display:flex;align-items:center;gap:10px;padding:12px 14px;flex-wrap:wrap}
+.filtros__linha + .filtros__linha{border-top:1px solid var(--n-200)}
+.filtros__label{
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--n-500);
+  font-weight:600;margin-right:2px;
+}
+.seg{display:flex;background:var(--n-100);border-radius:var(--raio-sm);padding:3px;gap:2px}
+.seg button{
+  padding:6px 12px;border-radius:5px;font-size:12px;font-weight:600;color:var(--cinza);transition:.15s;white-space:nowrap;
+}
+.seg button:hover{color:var(--preto)}
+.seg button.is-on{background:var(--branco);color:var(--preto);box-shadow:var(--sombra-sm)}
+
+.pill{
+  display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:20px;
+  border:1px solid var(--n-300);font-size:12px;font-weight:600;color:var(--cinza);
+  background:var(--branco);transition:.15s;
+}
+.pill:hover{border-color:var(--n-400);color:var(--preto)}
+.pill .cnt{font-size:10.5px;font-weight:600;background:var(--n-100);padding:1px 6px;border-radius:20px;color:var(--cinza)}
+.pill .bolinha{width:7px;height:7px;border-radius:50%;flex:0 0 7px}
+.pill.is-on{background:var(--preto);border-color:var(--preto);color:var(--branco)}
+.pill.is-on .cnt{background:rgba(255,255,255,.16);color:var(--branco)}
+
+.busca-inline{
+  display:flex;align-items:center;gap:8px;border:1px solid var(--n-300);border-radius:var(--raio-sm);
+  padding:7px 11px;min-width:230px;flex:1;max-width:340px;transition:.15s;
+}
+.busca-inline:focus-within{border-color:var(--amarelo-linha);box-shadow:0 0 0 3px var(--amarelo-suave)}
+.busca-inline input{border:none;outline:none;width:100%;font-size:12.5px;background:none}
+.busca-inline svg{width:15px;height:15px;color:var(--n-500);flex:0 0 15px}
+
+.avancado{display:none;padding:16px 14px;background:var(--n-050);border-top:1px solid var(--n-200)}
+.avancado.is-open{display:block;animation:fade .2s ease}
+.grid-campos{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:13px}
+.campo label{display:block;font-size:10.5px;font-weight:600;color:var(--cinza);margin-bottom:5px;letter-spacing:.02em}
+.campo .ctrl{
+  width:100%;display:flex;align-items:center;gap:8px;background:var(--branco);
+  border:1px solid var(--n-300);border-radius:var(--raio-sm);padding:8px 11px;font-size:12.5px;
+  color:var(--preto);transition:.15s;text-align:left;
+}
+.campo .ctrl:hover{border-color:var(--n-400)}
+.campo .ctrl:focus-within{border-color:var(--amarelo-linha);box-shadow:0 0 0 3px var(--amarelo-suave)}
+.campo .ctrl input{border:none;outline:none;background:none;width:100%}
+.campo .ctrl svg{width:14px;height:14px;color:var(--n-500);flex:0 0 14px;margin-left:auto}
+.campo .ctrl .ph{color:var(--n-500)}
+.avancado__acoes{display:flex;align-items:center;gap:9px;margin-top:15px;padding-top:14px;border-top:1px solid var(--n-200)}
+
+.chips{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;background:var(--amarelo-suave);
+  border:1px solid #F3DCB4;color:var(--preto);border-radius:20px;padding:4px 6px 4px 11px;
+  font-size:11.5px;font-weight:600;
+}
+.chip span.k{color:var(--cinza);font-weight:500}
+.chip button{
+  width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:var(--cinza);transition:.15s;
+}
+.chip button:hover{background:rgba(29,29,27,.1);color:var(--preto)}
+.chip button svg{width:10px;height:10px;stroke-width:2.5}
+
+/* ================= CARDS / KPI ================= */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px;margin-bottom:16px}
+.kpi{
+  background:var(--branco);border:1px solid var(--n-200);border-radius:var(--raio);padding:16px 17px;
+  box-shadow:var(--sombra-sm);position:relative;overflow:hidden;transition:.18s;
+}
+.kpi:hover{box-shadow:var(--sombra);transform:translateY(-1px)}
+.kpi__top{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.kpi__ico{
+  width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  background:var(--n-100);color:var(--cinza);flex:0 0 28px;
+}
+.kpi__ico svg{width:15px;height:15px;stroke-width:1.8}
+.kpi__ico--amarelo{background:var(--amarelo-suave);color:#9A6C12}
+.kpi__ico--erro{background:var(--erro-bg);color:var(--erro)}
+.kpi__ico--ok{background:var(--ok-bg);color:var(--ok)}
+.kpi__ico--info{background:var(--info-bg);color:var(--info)}
+.kpi__rot{font-size:11.5px;color:var(--cinza);font-weight:600}
+.kpi__val{font-size:25px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.kpi__val--erro{color:var(--erro)}
+.kpi__val--ok{color:var(--ok)}
+.kpi__pe{display:flex;align-items:center;gap:8px;margin-top:9px;font-size:11px;color:var(--n-500)}
+.tend{display:inline-flex;align-items:center;gap:3px;font-weight:600;padding:2px 6px;border-radius:5px;font-size:10.5px}
+.tend--up{background:var(--ok-bg);color:var(--ok)}
+.tend--down{background:var(--erro-bg);color:var(--erro)}
+.tend svg{width:11px;height:11px;stroke-width:2.4}
+.spark{position:absolute;right:0;bottom:0;opacity:.5;pointer-events:none}
+
+.card{
+  background:var(--branco);border:1px solid var(--n-200);border-radius:var(--raio);
+  box-shadow:var(--sombra-sm);overflow:hidden;
+}
+.card__head{
+  display:flex;align-items:center;gap:10px;padding:14px 17px;border-bottom:1px solid var(--n-200);
+}
+.card__head h3{font-size:13.5px;font-weight:600;letter-spacing:-.01em}
+.card__head p{font-size:11px;color:var(--n-500);margin-top:1px}
+.card__head .btn{margin-left:auto}
+.card__body{padding:17px}
+
+.cols{display:grid;gap:14px}
+.cols--2-1{grid-template-columns:1.9fr 1fr}
+.cols--1-1{grid-template-columns:1fr 1fr}
+@media(max-width:1200px){.cols--2-1,.cols--1-1{grid-template-columns:1fr}}
+
+/* ================= TABELA ================= */
+.tabela-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{
+  position:sticky;top:0;background:var(--branco);text-align:left;font-weight:600;font-size:10.5px;
+  letter-spacing:.07em;text-transform:uppercase;color:var(--cinza);padding:11px 14px;
+  border-bottom:2px solid var(--amarelo);white-space:nowrap;z-index:2;
+}
+thead th.num{text-align:right}
+thead th button{display:inline-flex;align-items:center;gap:4px;color:inherit;font:inherit;letter-spacing:inherit;text-transform:inherit}
+thead th button:hover{color:var(--preto)}
+thead th svg{width:11px;height:11px;opacity:.45}
+tbody td{padding:10px 13px;border-bottom:1px solid var(--n-200);white-space:nowrap;vertical-align:middle}
+tbody td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+tbody tr{transition:background .12s}
+tbody tr:hover{background:var(--amarelo-suave)}
+tbody tr:hover .acoes{opacity:1}
+tbody tr.is-atrasada td:first-child{box-shadow:inset 3px 0 0 var(--erro)}
+.forte{font-weight:600}
+.mudo{color:var(--n-500);font-size:11.5px}
+tfoot td{padding:12px 14px;font-weight:700;background:var(--n-050);border-top:2px solid var(--n-200);font-size:12.5px}
+tfoot td.num{text-align:right;font-variant-numeric:tabular-nums}
+
+.tag{
+  display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:20px;
+  font-size:11px;font-weight:600;white-space:nowrap;
+}
+.tag .bolinha{width:6px;height:6px;border-radius:50%}
+.tag--ok{background:var(--ok-bg);color:var(--ok)} .tag--ok .bolinha{background:var(--ok)}
+.tag--aberto{background:var(--info-bg);color:var(--info)} .tag--aberto .bolinha{background:var(--info)}
+.tag--alerta{background:var(--alerta-bg);color:var(--alerta)} .tag--alerta .bolinha{background:var(--alerta)}
+.tag--erro{background:var(--erro-bg);color:var(--erro)} .tag--erro .bolinha{background:var(--erro)}
+.tag--neutro{background:var(--n-100);color:var(--cinza)} .tag--neutro .bolinha{background:var(--n-500)}
+
+.acoes{display:flex;gap:4px;opacity:.35;transition:opacity .15s}
+.acao{
+  width:27px;height:27px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--n-300);background:var(--branco);color:var(--cinza);transition:.15s;
+}
+.acao:hover{border-color:var(--preto);color:var(--preto);background:var(--n-050)}
+.acao svg{width:13px;height:13px;stroke-width:1.8}
+.acao--txt{width:auto;padding:0 8px;font-size:10px;font-weight:700;letter-spacing:.04em}
+
+.tabela-foot{
+  display:flex;align-items:center;gap:12px;padding:11px 17px;border-top:1px solid var(--n-200);
+  background:var(--n-050);flex-wrap:wrap;
+}
+.tabela-foot .info{font-size:11.5px;color:var(--cinza);font-weight:500}
+.pag{display:flex;align-items:center;gap:4px;margin-left:auto}
+.pag button{
+  min-width:29px;height:29px;padding:0 8px;border-radius:6px;font-size:12px;font-weight:600;
+  color:var(--cinza);border:1px solid transparent;
+}
+.pag button:hover{background:var(--n-200);color:var(--preto)}
+.pag button.is-on{background:var(--preto);color:var(--branco)}
+
+/* ================= BARRAS / GRÁFICOS ================= */
+.barras{display:flex;flex-direction:column;gap:12px}
+.barra__linha{display:flex;align-items:center;gap:11px}
+.barra__rot{font-size:11.5px;font-weight:600;width:96px;flex:0 0 96px;color:var(--cinza)}
+.barra__trilho{flex:1;height:9px;background:var(--n-100);border-radius:20px;overflow:hidden;display:block}
+.barra__fill{display:block;height:100%;border-radius:20px;transition:width .5s ease}
+.barra__val{font-size:11.5px;font-weight:700;width:92px;text-align:right;font-variant-numeric:tabular-nums}
+
+.colunas{display:flex;align-items:flex-end;gap:9px;height:150px;padding-top:10px}
+.coluna{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;height:100%;justify-content:flex-end}
+.coluna__barra{
+  width:100%;max-width:40px;background:var(--amarelo);border-radius:5px 5px 0 0;position:relative;transition:.2s;
+}
+.coluna:hover .coluna__barra{background:var(--amarelo-linha)}
+.coluna__barra.escura{background:var(--preto)}
+.coluna__rot{font-size:10px;color:var(--n-500);font-weight:600}
+.coluna__val{font-size:10px;font-weight:700;color:var(--cinza)}
+
+.legenda{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;padding-top:13px;border-top:1px solid var(--n-200)}
+.legenda span{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--cinza);font-weight:500}
+.legenda i{width:9px;height:9px;border-radius:3px;display:block}
+
+/* ---- lista de itens ---- */
+.lista{display:flex;flex-direction:column}
+.lista__item{display:flex;align-items:center;gap:12px;padding:11px 17px;border-bottom:1px solid var(--n-200);transition:.12s}
+.lista__item:last-child{border-bottom:none}
+.lista__item:hover{background:var(--n-050)}
+.lista__ord{
+  width:22px;height:22px;flex:0 0 22px;border-radius:6px;background:var(--n-100);color:var(--cinza);
+  display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;
+}
+.lista__item:first-child .lista__ord{background:var(--amarelo);color:var(--preto)}
+.lista__txt{min-width:0;flex:1}
+.lista__t{display:block;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lista__s{display:block;font-size:11px;color:var(--n-500);margin-top:2px}
+.lista__v{font-size:12.5px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+
+/* ---- timeline de pedido ---- */
+.steps{display:grid;grid-template-columns:repeat(5,1fr);min-width:270px}
+.step{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative}
+.step::after{
+  content:"";position:absolute;top:8px;left:50%;width:100%;height:2px;background:var(--n-200);z-index:0;
+}
+.step:last-child::after{display:none}
+.step.done::after{background:var(--ok)}
+.step__bola{
+  width:17px;height:17px;border-radius:50%;border:2px solid var(--n-300);background:var(--branco);
+  display:flex;align-items:center;justify-content:center;position:relative;z-index:1;
+}
+.step__bola svg{width:9px;height:9px;stroke-width:3.2;color:var(--branco)}
+.step.done .step__bola{background:var(--ok);border-color:var(--ok)}
+.step.now .step__bola{border-color:var(--amarelo-linha);background:var(--amarelo);box-shadow:0 0 0 3px var(--amarelo-suave)}
+.step__rot{font-size:9.5px;color:var(--n-500);font-weight:600;text-align:center;line-height:1.1}
+.step.done .step__rot{color:var(--cinza)}
+.step.now .step__rot{color:var(--preto)}
+
+/* ---- aging ---- */
+.aging{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}
+.aging__c{
+  border:1px solid var(--n-200);border-radius:var(--raio-sm);padding:12px;text-align:center;
+  transition:.15s;cursor:pointer;background:var(--branco);
+}
+.aging__c:hover{border-color:var(--n-400);box-shadow:var(--sombra-sm)}
+.aging__c.is-on{border-color:var(--preto);box-shadow:0 0 0 2px var(--preto)}
+.aging__t{font-size:10px;font-weight:600;color:var(--n-500);letter-spacing:.05em;text-transform:uppercase}
+.aging__v{font-size:17px;font-weight:700;margin:5px 0 2px;font-variant-numeric:tabular-nums}
+.aging__q{font-size:10.5px;color:var(--n-500)}
+.aging__c[data-sev="1"] .aging__v{color:var(--alerta)}
+.aging__c[data-sev="2"] .aging__v{color:var(--erro)}
+
+/* ---- banner de ajuda ---- */
+.dica{
+  display:flex;align-items:flex-start;gap:11px;background:var(--amarelo-suave);border:1px solid #F3DCB4;
+  border-radius:var(--raio);padding:12px 15px;margin-bottom:16px;
+}
+.dica svg{width:16px;height:16px;color:#9A6C12;flex:0 0 16px;margin-top:1px;stroke-width:1.9}
+.dica p{font-size:12px;line-height:1.5;color:var(--preto)}
+.dica b{font-weight:700}
+.dica button{margin-left:auto;color:var(--cinza);flex:0 0 auto}
+.dica button:hover{color:var(--preto)}
+
+/* ---- salvos ---- */
+.salvos{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.salvo{
+  display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:20px;border:1px dashed var(--n-300);
+  font-size:11.5px;font-weight:600;color:var(--cinza);transition:.15s;
+}
+.salvo:hover{border-color:var(--preto);color:var(--preto);border-style:solid;background:var(--n-050)}
+.salvo svg{width:12px;height:12px;stroke-width:2}
+.salvo.is-on{background:var(--preto);border-color:var(--preto);color:var(--branco);border-style:solid}
+
+/* ---- toast ---- */
+.toast{
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(70px);
+  background:var(--preto);color:var(--branco);padding:11px 17px;border-radius:var(--raio-sm);
+  font-size:12.5px;font-weight:500;box-shadow:var(--sombra);opacity:0;transition:.28s cubic-bezier(.2,.8,.3,1);
+  z-index:99;display:flex;align-items:center;gap:9px;
+}
+.toast.is-on{transform:translateX(-50%) translateY(0);opacity:1}
+.toast svg{width:15px;height:15px;color:var(--amarelo)}
+
+/* ---- barra de parâmetros (mesmos campos do sistema) ---- */
+.params{
+  background:var(--branco);border:1px solid var(--n-200);border-radius:var(--raio);
+  box-shadow:var(--sombra-sm);margin-bottom:16px;padding:15px 16px;
+  display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;
+}
+.params.is-hidden{display:none}
+.params__campos{display:flex;align-items:flex-end;gap:13px;flex-wrap:wrap;flex:1;min-width:0}
+.params__acoes{display:flex;align-items:center;gap:8px;margin-left:auto;padding-left:6px}
+.params__nota{
+  display:flex;align-items:center;gap:8px;margin-left:auto;padding-left:14px;
+  font-size:11.5px;color:var(--n-500);font-weight:500;padding-bottom:9px;
+}
+.params__nota svg{width:14px;height:14px;flex:0 0 14px;color:var(--amarelo-linha);stroke-width:2}
+.campo{min-width:186px}
+.campo--lg{min-width:290px;flex:1;max-width:360px}
+.campo--sm{min-width:142px}
+.campo label{display:block;font-size:10.5px;font-weight:600;color:var(--cinza);margin-bottom:5px;letter-spacing:.02em;white-space:nowrap}
+.campo label .req{color:var(--erro);font-weight:700}
+.campo .ctrl{
+  width:100%;display:flex;align-items:center;gap:8px;background:var(--branco);
+  border:1px solid var(--n-300);border-radius:var(--raio-sm);padding:9px 11px;font-size:12.5px;
+  color:var(--preto);transition:.15s;text-align:left;min-height:38px;
+}
+.campo .ctrl:hover{border-color:var(--n-400)}
+.campo .ctrl:focus-within{border-color:var(--amarelo-linha);box-shadow:0 0 0 3px var(--amarelo-suave)}
+.campo .ctrl > span:first-child{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.campo .ctrl input{border:none;outline:none;background:none;width:100%;font-weight:500}
+.campo .ctrl input::placeholder{color:var(--n-400);font-weight:400}
+.campo .ctrl svg{width:14px;height:14px;color:var(--n-500);flex:0 0 14px}
+.campo .ctrl .ph{color:var(--n-500);font-weight:400}
+
+/* ---- popover de seleção (no lugar da janela em tela cheia) ---- */
+.pop{
+  position:fixed;display:none;background:var(--branco);border:1px solid var(--n-200);border-radius:var(--raio);
+  box-shadow:var(--sombra);z-index:60;
+}
+.pop.is-on{display:block;animation:fade .14s ease}
+.pop--lista{width:330px;max-width:92vw;overflow:hidden}
+.pop__busca{display:flex;align-items:center;gap:9px;padding:11px 13px;border-bottom:1px solid var(--n-200)}
+.pop__busca svg{width:14px;height:14px;color:var(--n-500);flex:0 0 14px}
+.pop__busca input{border:none;outline:none;width:100%;font-size:12.5px;background:none}
+.pop__lista{max-height:250px;overflow-y:auto;padding:5px}
+.pop__op{
+  display:block;width:100%;text-align:left;padding:9px 10px;border-radius:var(--raio-sm);
+  font-size:12.5px;line-height:1.35;color:var(--preto);transition:.12s;
+}
+.pop__op:hover{background:var(--amarelo-suave)}
+.pop__nada{padding:24px;text-align:center;font-size:12px;color:var(--n-500)}
+.pop__pe{display:flex;gap:8px;justify-content:flex-end;padding:9px 11px;border-top:1px solid var(--n-200);background:var(--n-050)}
+
+/* ---- busca lateral ---- */
+.busca-lateral{
+  display:flex;align-items:center;gap:9px;margin:12px 14px 2px;padding:8px 11px;
+  border-radius:var(--raio-sm);background:var(--n-100);border:1px solid transparent;transition:.15s;
+}
+.busca-lateral:focus-within{background:var(--branco);border-color:var(--amarelo-linha);box-shadow:0 0 0 3px var(--amarelo-suave)}
+.busca-lateral input{border:none;background:none;outline:none;width:100%;font-size:12.5px}
+.busca-lateral svg{width:15px;height:15px;color:var(--n-500);flex:0 0 15px}
+.busca-lateral kbd{font-family:inherit;font-size:9px;color:var(--n-500);background:var(--branco);border:1px solid var(--n-300);border-radius:4px;padding:2px 5px;font-weight:600;white-space:nowrap}
+
+/* ---- cliente fixo no topo ---- */
+.cliente-fixo{
+  display:flex;align-items:center;gap:9px;padding:7px 13px;border-radius:var(--raio-sm);
+  background:var(--n-050);border:1px solid var(--n-200);max-width:520px;
+}
+.cliente-fixo__rot{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--n-500);font-weight:700}
+.cliente-fixo__val{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cliente-fixo__cod{font-size:10.5px;font-weight:700;color:var(--preto);background:var(--amarelo);padding:2px 7px;border-radius:20px}
+
+/* ---- divisor e rótulos ---- */
+.divisor{width:1px;height:22px;background:var(--n-200);margin:0 4px}
+.filtros__label small{font-weight:500;letter-spacing:0;text-transform:none;font-size:9.5px;color:var(--n-400)}
+.filtros__linha--chips{background:var(--n-050)}
+.dica-campo{font-weight:500;color:var(--n-500);font-size:9.5px;letter-spacing:0}
+.obs-inline{font-size:11px;color:var(--n-500);line-height:1.45;max-width:70%}
+
+/* ---- observações para a desenvolvedora ---- */
+.nota-obs{
+  display:flex;align-items:flex-start;gap:11px;background:var(--amarelo-suave);border:1px solid #F3DCB4;
+  border-radius:var(--raio);padding:13px 16px;margin-top:16px;
+}
+.nota-obs--topo{margin-top:0;margin-bottom:16px}
+.nota-obs svg{width:16px;height:16px;color:#9A6C12;flex:0 0 16px;margin-top:1px;stroke-width:1.9}
+.nota-obs p{font-size:11.5px;line-height:1.55}
+.nota-obs i{font-style:normal;font-weight:600}
+
+.kpi__link{margin-top:11px;padding-top:10px;border-top:1px solid var(--n-200);font-size:11px;font-weight:600;color:var(--cinza)}
+.kpi:hover .kpi__link{color:var(--preto)}
+.kpi__val--alerta{color:var(--alerta)}
+.kpi__pe span{font-size:11px}
+
+/* ---- células ---- */
+td.zero{color:var(--n-400);font-weight:500}
+td.dias{font-weight:700;color:var(--erro)}
+.rep,.fil{display:inline-block;max-width:210px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom}
+.acao--xml{color:var(--ok);border-color:#CBE3D6}
+.acao--xml:hover{border-color:var(--ok);color:var(--ok);background:var(--ok-bg)}
+.acao--pdf,.acao--nf{color:var(--erro);border-color:#EFD2CE}
+.acao--pdf:hover,.acao--nf:hover{border-color:var(--erro);color:var(--erro);background:var(--erro-bg)}
+.drawer__reg{margin-top:12px;font-size:11.5px;color:var(--n-500);font-weight:600}
+td.destaque{font-weight:700}
+td.saldo-aberto{color:var(--alerta)}
+th.col-fixa,td.col-fixa{position:sticky;left:0;background:var(--branco);z-index:1}
+thead th.col-fixa{z-index:3}
+tbody tr:hover td.col-fixa{background:var(--amarelo-suave)}
+tfoot td.col-fixa{background:var(--n-050)}
+tfoot td{white-space:nowrap}
+
+/* ---- popover de colunas ---- */
+.pop{
+  position:fixed;display:none;background:var(--branco);border:1px solid var(--n-200);border-radius:var(--raio);
+  box-shadow:var(--sombra);padding:6px;width:272px;z-index:60;
+}
+.pop.is-on{display:block;animation:fade .15s ease}
+.pop__head{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--n-500);font-weight:700;padding:8px 10px 6px}
+.pop__item{display:flex;align-items:flex-start;gap:9px;padding:8px 10px;border-radius:var(--raio-sm);font-size:12px;cursor:pointer;line-height:1.35}
+.pop__item:hover{background:var(--n-050)}
+.pop__item input{margin-top:2px;accent-color:var(--preto)}
+.pop__nota{display:block;font-size:10px;color:var(--n-500);font-weight:500}
+
+/* ---- drawer lateral (no lugar do modal de tela cheia) ---- */
+.drawer-fundo{position:fixed;inset:0;background:rgba(29,29,27,.32);opacity:0;pointer-events:none;transition:.22s;z-index:70}
+.drawer-fundo.is-on{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;width:660px;max-width:92vw;background:var(--branco);
+  box-shadow:-10px 0 40px rgba(29,29,27,.14);transform:translateX(105%);transition:transform .26s cubic-bezier(.2,.8,.3,1);
+  z-index:71;display:flex;flex-direction:column;
+}
+.drawer.is-open{transform:none}
+.drawer__head{display:flex;align-items:flex-start;gap:12px;padding:18px 20px;border-bottom:2px solid var(--amarelo)}
+.drawer__head h3{font-size:14px;font-weight:600}
+.drawer__head p{font-size:11.5px;color:var(--n-500);margin-top:2px}
+.drawer__head .icon-btn{margin-left:auto}
+.drawer__body{flex:1;overflow-y:auto;padding:18px 20px}
+.tbl-drawer{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl-drawer th{position:static;border-bottom:1px solid var(--n-300);padding:9px 10px}
+.tbl-drawer td{padding:11px 10px;white-space:normal}
+.tbl-drawer tfoot td{background:var(--n-050);font-weight:700}
+.vazio-drawer{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:60px 30px;color:var(--n-500)}
+.vazio-drawer svg{width:34px;height:34px;stroke-width:1.4;color:var(--n-400);margin-bottom:4px}
+.vazio-drawer b{font-size:13.5px;color:var(--preto)}
+.vazio-drawer span{font-size:11.5px;line-height:1.55;max-width:340px}
+
+/* ---- nota de mockup ---- */
+.selo{
+  position:fixed;right:14px;bottom:14px;background:var(--preto);color:var(--branco);
+  font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  padding:6px 11px;border-radius:20px;opacity:.82;z-index:98;
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <img src="data:image/png;base64,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bejyRNujpGzBMoSuju+D77QPAMA+mesk95Thm6eYr7LqCDLvtL+WhZwhrK75Vcy/AgDAM9eA1TX0t86caJ4TxlqDjeaFpSxvflfv+efTcF/qFjpZW/xoLsBZy/2vNaeMuT4AAHhmGbAUCGLbk+R2MM+ZtB4Kdzmr+s4DX0+tJGVXwdxr5pb3K2idaQ7XsyEm7AMAsO9m2wdLE80vGvOHvig4ZIUGBbaUrU5uItWe1J4wRWgOmZ53195gF23PwU2S1y26Kk9BK9oVHgCAuZv1XoRulWBVVcfeRtDnfYODdpePhayPXasHLXh7g33xmlSuVbF70VwZ6VYsugarWoFYN1y97wpaAAAgbJZtGnJpztOl14phrWHBZXMoUcFk4fVnuk9p8uhCTcYWE28t9gDsaO3gfsfjXfe2AgBgCghYHRSu7gMd0r9b7cNXlqWrgH1I/HaTpp6qXMU6g3/R9j0AACDDrIcIE8W2nznK2Qg6RhWplH5S743C1WHCtitPue0EAAB7i4AVocafXZPPLSs8XRulfjRsNJrTHBUAAGRgiDAidfsZ621i1BPr3Fst+FPzuExX7iVsgfOg1gwAACDnHEvAClMF69+Ob1u7flBP+TybFAx/iYWyhD0Un2prHgAA9hpDhBGavH7X8W3BnlnqK3VVluXKhRlVpgbT0nLha1mWj9o8us0yMiT5nXAFAEA/VLA6qO3CKjDR3bUyOGxbReiCldugueVnXGA7t1h52Hg89zy/Rb7lLNBg9JmC1rkm7bvnd2vRBgIAgLkiYCVQeLlqTHh3jTsv21b0qWL0OXLPH9WYtJVCz8KbQO/aRFzFVg+6KlnHhHxXkaJ5KAAAO0DAyuTaG3S1SUhpGhqaGN9RMbtodmL3fq7zD2k9GR8AALQjYA0gJexEhuy6mn+2NhklYAEAMB5Mch8RDS12Nf8MDS2uA19P/XcAAGCEgDWMLx33ug60T0iZIxX6nq5J6a1DiwAAwB4BaxhdYce8/YFaKoRaSnwf4jEBAEA7AtYAVJ26CAzbvY+0QAj21Er5nqqqTvW4d97trVs9aN0WAgAAhDHJfUBqt3Cuff8e1V+qawXibWST5Qc3REhYAgBg3AhYI6NQdt0Sstww36Kqqvu5v0YAAIwdAWuk1A/rVBs+r6w3egYAAMMhYAEAABhjkjsAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAIAxAhYAAICloij+H1EImQI82GGuAAAAAElFTkSuQmCC" alt="Luminatti">
+      <span class="portal">Portal do Cliente</span>
+    </div>
+
+    <div class="busca-lateral">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input placeholder="Pesquisar…"><kbd>Ctrl K</kbd>
+    </div>
+
+    <div class="sidebar__section">Relatórios</div>
+    <nav class="nav">
+      <button class="nav__item is-active" data-page="dash">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6" rx="1"/><rect x="12" y="7" width="3" height="10" rx="1"/><rect x="17" y="13" width="3" height="4" rx="1"/></svg>
+        Dashboard Gerencial
+      </button>
+      <button class="nav__item" data-page="nf">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>
+        Relatório de Notas Fiscais
+      </button>
+      <button class="nav__item" data-page="ped">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        Relatório de Pedidos
+      </button>
+      <button class="nav__item" data-page="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>
+        Relatório de Títulos em Aberto
+      </button>
+      <button class="nav__item" data-page="tat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        Relatório de Títulos em Atraso
+      </button>
+    </nav>
+
+    <div class="sidebar__foot">
+      <button class="user">
+        <span class="avatar">LH</span>
+        <span class="user__info">
+          <span class="user__name">Lucas</span>
+          <span class="user__mail">lucashartmannr@gmail.com</span>
+        </span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <div class="crumb" id="crumb">LUMINATTI_HMG</div>
+        <h1 id="titulo">Dashboard Gerencial</h1>
+      </div>
+      <div class="topbar__spacer"></div>
+      <button class="btn" id="btnParametros">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 5h18M6 12h12M10 19h4"/></svg>
+        Parâmetros
+      </button>
+      <button class="btn" data-toast="Recarrega o relatório com os parâmetros atuais.">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>
+        Atualizar
+      </button>
+      <button class="icon-btn" data-toast="Notificações do portal."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
+    </header>
+
+    <div class="content">
+
+      <!-- =================== DASHBOARD =================== -->
+      <section class="page is-active" id="page-dash">
+        <div class="params" id="params-dash">
+          <div class="params__campos">
+            <div class="campo campo--lg">
+              <label>Unidade <b class="req">*</b></label>
+              <button class="ctrl" data-lista="cliente"><span>LEROY MERLIN COMPANHIA BRASILEIRA DE BRICOLAGEM</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+            </div>
+          </div>
+          <div class="params__nota">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
+            Os indicadores são atualizados assim que você escolhe a unidade.
+          </div>
+        </div>
+
+        <div class="kpis">
+          <button class="kpi" data-goto="ped">
+            <div class="kpi__top"><span class="kpi__ico kpi__ico--info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span><span class="kpi__rot">Valor total de pedidos realizados</span></div>
+            <div class="kpi__val">R$ 0,00</div>
+            <div class="kpi__pe"><span>Pedidos dos Últimos 120 Dias</span></div>
+            <div class="kpi__link">Ver Relatório de Pedidos →</div>
+          </button>
+          <button class="kpi" data-goto="nf">
+            <div class="kpi__top"><span class="kpi__ico kpi__ico--ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></span><span class="kpi__rot">Valor total faturado</span></div>
+            <div class="kpi__val">R$ 0,00</div>
+            <div class="kpi__pe"><span>Valor total faturado nos últimos 120 dias</span></div>
+            <div class="kpi__link">Ver Relatório de Notas Fiscais →</div>
+          </button>
+          <button class="kpi" data-goto="tab">
+            <div class="kpi__top"><span class="kpi__ico kpi__ico--amarelo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span><span class="kpi__rot">Valor total financeiro em aberto</span></div>
+            <div class="kpi__val kpi__val--alerta">R$ 72.804,00</div>
+            <div class="kpi__pe"><span>Valor total financeiro em aberto</span></div>
+            <div class="kpi__link">Ver Relatório de Títulos em Aberto →</div>
+          </button>
+          <button class="kpi" data-goto="tat">
+            <div class="kpi__top"><span class="kpi__ico kpi__ico--erro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2 18a2 2 0 0 0 1.7 3h16.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><span class="kpi__rot">Valor total financeiro em atraso</span></div>
+            <div class="kpi__val kpi__val--erro">R$ 72.804,00</div>
+            <div class="kpi__pe"><span>Valor total financeiro em atraso</span></div>
+            <div class="kpi__link">Ver Relatório de Títulos em Atraso →</div>
+          </button>
+        </div>
+      </section>
+
+      <!-- =================== NOTAS FISCAIS =================== -->
+      <section class="page" id="page-nf">
+        <div class="params" id="params-nf">
+          <div class="params__campos">
+            <div class="campo campo--lg">
+              <label>Unidade <b class="req">*</b></label>
+              <button class="ctrl" data-lista="cliente"><span>LEROY MERLIN COMPANHIA BRASILEIRA DE BRICOLAGEM</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+            </div>
+            <div class="campo">
+              <label>Status</label>
+              <button class="ctrl" data-lista="status" data-alvo="nf"><span class="ph" id="valStatusNF">Todos</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+            </div>
+            <div class="campo campo--sm">
+              <label>Data Inicial</label>
+              <div class="ctrl"><input placeholder="dd/mm/aaaa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div>
+            </div>
+            <div class="campo campo--sm">
+              <label>Data Final</label>
+              <div class="ctrl"><input placeholder="dd/mm/aaaa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div>
+            </div>
+            <div class="campo">
+              <label>Representante</label>
+              <button class="ctrl" data-lista="representante"><span class="ph">Todos</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+            </div>
+            <div class="campo">
+              <label>Empresa emissora</label>
+              <button class="ctrl" data-lista="filial"><span class="ph">Todas</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+            </div>
+          </div>
+          <div class="params__acoes">
+            <button class="btn btn--ghost" data-limpar="nf">Limpar</button>
+            <button class="btn btn--acento" data-toast="Relatório atualizado com os parâmetros selecionados.">Confirmar</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__head">
+            <div><h3>Relatório de Notas Fiscais</h3><p id="resumoNF"></p></div>
+            <button class="btn btn--sm" data-toast="Exporta o relatório exibido."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Exportar</button>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th class="col-fixa"><button data-sortnf="nf">Número NF <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></button></th>
+                  <th><button data-sortnf="data">Data Lançamento <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></button></th>
+                  <th>Itens</th>
+                  <th>XML</th>
+                  <th>DANFE</th>
+                  <th>Status</th>
+                  <th>Representante</th>
+                  <th>Condição de Pagamento</th>
+                  <th>Forma de Pagamento</th>
+                  <th class="num"><button data-sortnf="prod">Total Produtos <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></button></th>
+                  <th class="num">Desconto Documento</th>
+                  <th class="num">Despesas Adicionais</th>
+                  <th class="num">Imposto Não Incluso</th>
+                  <th class="num"><button data-sortnf="total">Total Documento <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></button></th>
+                  <th class="num">Saldo a Pagar</th>
+                  <th>Empresa emissora</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyNF"></tbody>
+            </table>
+          </div>
+          <div class="tabela-foot"><span class="info" id="pagNF"></span></div>
+        </div>
+      </section>
+
+      <!-- =================== PEDIDOS =================== -->
+      <section class="page" id="page-ped">
+        <div class="params" id="params-ped">
+          <div class="params__campos">
+            <div class="campo campo--lg">
+              <label>Unidade <b class="req">*</b></label>
+              <button class="ctrl" data-lista="cliente"><span>LEROY MERLIN COMPANHIA BRASILEIRA DE BRICOLAGEM</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+            </div>
+            <div class="campo">
+              <label>Status</label>
+              <button class="ctrl" data-lista="status" data-alvo="ped"><span class="ph" id="valStatusPed">Todos</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+            </div>
+            <div class="campo">
+              <label>Representante</label>
+              <button class="ctrl" data-lista="representante"><span class="ph">Todos</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+            </div>
+            <div class="campo">
+              <label>Empresa emissora</label>
+              <button class="ctrl" data-lista="filial"><span class="ph">Todas</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+            </div>
+            <div class="campo campo--sm">
+              <label>Data Inicial</label>
+              <div class="ctrl"><input placeholder="dd/mm/aaaa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div>
+            </div>
+            <div class="campo campo--sm">
+              <label>Data Final</label>
+              <div class="ctrl"><input placeholder="dd/mm/aaaa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div>
+            </div>
+          </div>
+          <div class="params__acoes">
+            <button class="btn btn--ghost" data-limpar="ped">Limpar</button>
+            <button class="btn btn--acento" data-toast="Relatório atualizado com os parâmetros selecionados.">Confirmar</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__head"><div><h3>Relatório de Pedidos</h3><p id="resumoPed"></p></div>
+            <button class="btn btn--sm" data-toast="Exporta o relatório exibido."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Exportar</button>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th class="col-fixa"><button data-sortped="ped">Nº Pedido <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></button></th>
+                  <th><button data-sortped="data">Data Lançamento <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></button></th>
+                  <th>Itens</th>
+                  <th>NFs</th>
+                  <th>Status</th>
+                  <th>Representante</th>
+                  <th class="num">Total Produtos</th>
+                  <th class="num">Desconto</th>
+                  <th class="num">Despesas Adicionais</th>
+                  <th class="num">Impostos</th>
+                  <th class="num">Total Pedido</th>
+                  <th class="num">Total Faturado</th>
+                  <th class="num"><button data-sortped="saldo">Saldo a Faturar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></button></th>
+                  <th>Empresa emissora</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyPed"></tbody>
+            </table>
+          </div>
+          <div class="tabela-foot"><span class="info" id="pagPed"></span></div>
+        </div>
+      </section>
+
+      <!-- =================== TÍTULOS EM ABERTO =================== -->
+      <section class="page" id="page-tab">
+        <div class="params" id="params-tab">
+          <div class="params__campos">
+            <div class="campo campo--lg">
+              <label>Unidade <b class="req">*</b></label>
+              <button class="ctrl" data-lista="cliente"><span>LEROY MERLIN COMPANHIA BRASILEIRA DE BRICOLAGEM</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+            </div>
+            <div class="campo campo--sm"><label>Nº do Pedido</label><div class="ctrl"><input placeholder="ex.: 94014"></div></div>
+            <div class="campo campo--sm"><label>Nº da NF</label><div class="ctrl"><input placeholder="ex.: 152054"></div></div>
+            <div class="campo">
+              <label>Empresa emissora</label>
+              <button class="ctrl" data-lista="filial"><span class="ph">Todas</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+            </div>
+            <div class="campo campo--sm"><label>Data Inicial Vencimento</label><div class="ctrl"><input placeholder="dd/mm/aaaa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div></div>
+            <div class="campo campo--sm"><label>Data Final Vencimento</label><div class="ctrl"><input placeholder="dd/mm/aaaa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div></div>
+          </div>
+          <div class="params__acoes">
+            <button class="btn btn--ghost">Limpar</button>
+            <button class="btn btn--acento" data-toast="Relatório atualizado com os parâmetros selecionados.">Confirmar</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__head"><div><h3>Relatório de Títulos em Aberto</h3><p id="resumoTab"></p></div>
+            <button class="btn btn--sm" data-toast="Exporta o relatório exibido."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Exportar</button>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr>
+                <th class="col-fixa"><button data-sorttab="nf">N da NF <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></button></th>
+                <th>Data de Lançamento NF</th>
+                <th>Parcela</th>
+                <th><button data-sorttab="venc">Vencimento <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></button></th>
+                <th class="num"><button data-sorttab="dias">Dias Vencimento <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></button></th>
+                <th>N do Pedido</th>
+                <th>Data Pedido</th>
+                <th class="num">Valor Parcela</th>
+                <th class="num"><button data-sorttab="valor">Valor em Aberto <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></button></th>
+                <th>Representante</th>
+                <th>Empresa emissora</th>
+              </tr></thead>
+              <tbody id="tbodyTab"></tbody>
+            </table>
+          </div>
+          <div class="tabela-foot"><span class="info" id="pagTab"></span></div>
+        </div>
+      </section>
+
+      <!-- =================== TÍTULOS EM ATRASO =================== -->
+      <section class="page" id="page-tat">
+        <div class="params" id="params-tat">
+          <div class="params__campos">
+            <div class="campo campo--lg">
+              <label>Unidade <b class="req">*</b></label>
+              <button class="ctrl" data-lista="cliente"><span>LEROY MERLIN COMPANHIA BRASILEIRA DE BRICOLAGEM</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+            </div>
+            <div class="campo campo--sm"><label>Nº do Pedido</label><div class="ctrl"><input placeholder="ex.: 94014"></div></div>
+            <div class="campo campo--sm"><label>Nº da NF</label><div class="ctrl"><input placeholder="ex.: 152054"></div></div>
+            <div class="campo">
+              <label>Empresa emissora</label>
+              <button class="ctrl" data-lista="filial"><span class="ph">Todas</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+            </div>
+            <div class="campo campo--sm"><label>Data Inicial</label><div class="ctrl"><input placeholder="dd/mm/aaaa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div></div>
+            <div class="campo campo--sm"><label>Data Final</label><div class="ctrl"><input placeholder="dd/mm/aaaa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div></div>
+          </div>
+          <div class="params__acoes">
+            <button class="btn btn--ghost">Limpar</button>
+            <button class="btn btn--acento" data-toast="Relatório atualizado com os parâmetros selecionados.">Confirmar</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__head"><div><h3>Relatório de Títulos em Atraso</h3><p id="resumoTat"></p></div>
+            <button class="btn btn--sm" data-toast="Exporta o relatório exibido."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Exportar</button>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr>
+                <th class="col-fixa">Nº NF</th>
+                <th>Data Lançamento NF</th>
+                <th>Parcela</th>
+                <th>Data Vencimento</th>
+                <th class="num"><button data-sorttat="dias">Dias em Atraso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></button></th>
+                <th>Nº Pedido</th>
+                <th>Data Pedido</th>
+                <th class="num">Valor Parcela</th>
+                <th class="num"><button data-sorttat="valor">Valor Aberto <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></button></th>
+                <th>Representante</th>
+                <th>Empresa emissora</th>
+              </tr></thead>
+              <tbody id="tbodyTat"></tbody>
+            </table>
+          </div>
+          <div class="tabela-foot"><span class="info" id="pagTat"></span></div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- popover de seleção (no lugar da janela em tela cheia) -->
+<div class="pop pop--lista" id="popLista">
+  <div class="pop__busca">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="popBusca" placeholder="Procurar…">
+  </div>
+  <div class="pop__lista" id="popItens"></div>
+  <div class="pop__pe">
+    <button class="btn btn--ghost btn--sm" id="popRemover">Remover seleção</button>
+    <button class="btn btn--sm" id="popFechar">Fechar</button>
+  </div>
+</div>
+
+<!-- painel lateral: Itens / NFs -->
+<div class="drawer-fundo" id="drawerFundo"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer__head">
+    <div><h3 id="drawerTitulo"></h3><p id="drawerSub"></p></div>
+    <button class="icon-btn" id="drawerFechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="drawer__body" id="drawerBody"></div>
+</aside>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg><span id="toastTxt"></span></div>
+<div class="selo">Mockup · proposta Luminatti</div>
+
+<script>
+/* ---------- utilidades ---------- */
+const $  = (s,e=document)=>e.querySelector(s);
+const $$ = (s,e=document)=>[...e.querySelectorAll(s)];
+const brl = n => 'R$ ' + n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const dnum = d => d.split('/').reverse().join('');
+
+let toastT;
+function toast(msg){
+  $('#toastTxt').textContent = msg;
+  $('#toast').classList.add('is-on');
+  clearTimeout(toastT);
+  toastT = setTimeout(()=>$('#toast').classList.remove('is-on'), 2600);
+}
+document.addEventListener('click', e=>{ const t=e.target.closest('[data-toast]'); if(t) toast(t.dataset.toast); });
+
+const REP = 'JOSE CARLOS SIMÃO DE GOUVEIA-MULTI COMMERCE REPRESENTAÇÕES COMERCIAIS LTDA';
+const F_DANURI = 'DANURI IMPORTACAO E EXPORTACAO LTDA - SC';
+const F_HAZAK  = 'HAZAK ILUMINACAO LTDA';
+
+const IC_XML  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="m9.5 12.8 1.4 1.9-1.4 1.9M14.5 12.8 13.1 14.7l1.4 1.9"/></svg>';
+const IC_PDF  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 15h6M9 12h3"/></svg>';
+const IC_INFO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>';
+
+/* ---------- dados reais lidos do portal (LUMINATTI_HMG) ---------- */
+const NOTAS = [
+  ['152054','26/03/2026','Aberto','98 dias','Transferencia',2088.24,0,0,135.74,2223.98,2223.98,F_DANURI],
+  ['151584','17/03/2026','Aberto','98 dias','Transferencia', 506.02,0,0, 16.22, 522.24, 522.24,F_DANURI],
+  ['151226','10/03/2026','Aberto','98 dias','Transferencia',1036.00,0,0, 19.47,1055.47,1055.47,F_DANURI],
+  ['150786','26/02/2026','Aberto','98 dias','Transferencia',3419.47,0,0,182.95,3602.42,3602.42,F_DANURI],
+  ['150523','20/02/2026','Aberto','98 dias','Transferencia', 911.96,0,0, 36.81, 948.77, 948.77,F_DANURI],
+  ['150426','18/02/2026','Aberto','98 dias','Transferencia',1264.49,0,0, 32.87,1297.36,1297.36,F_DANURI],
+  ['150159','09/02/2026','Aberto','98 dias','Transferencia', 929.16,0,0, 53.21, 982.37, 982.37,F_DANURI],
+  ['150035','03/02/2026','Aberto','98 dias','Transferencia',1635.37,0,0, 85.91,1721.28,1721.28,F_DANURI],
+  ['149715','28/01/2026','Aberto','98 dias','Transferencia', 685.87,0,0, 24.97, 710.84, 710.84,F_DANURI],
+  ['149590','26/01/2026','Aberto','98 dias','Transferencia',6267.22,0,0,277.34,6544.56,6544.56,F_DANURI],
+  ['149532','23/01/2026','Aberto','98 dias','Transferencia', 656.61,0,0, 23.83, 680.44, 680.44,F_DANURI],
+  ['149085','16/01/2026','Aberto','98 dias','Transferencia',1344.60,0,0, 41.45,1386.05,1386.05,F_DANURI],
+  ['148799','17/12/2025','Aberto','98 dias','Transferencia', 646.15,0,0, 32.14, 678.29, 678.29,F_DANURI],
+  ['148541','15/12/2025','Aberto','98 dias','Transferencia', 851.45,0,0, 19.18, 870.63, 870.63,F_DANURI],
+  ['136366','08/04/2025','Fechado','98 dias','Transferencia', 719.69,0,0, 41.40, 761.09,   0,   F_DANURI],
+  ['136282','07/04/2025','Fechado','98 dias','Transferencia', 524.40,0,0, 51.13, 575.53,   0,   F_DANURI],
+  ['136019','02/04/2025','Fechado','98 dias','Transferencia', 759.08,0,0, 28.02, 787.10,   0,   F_DANURI],
+  ['135632','25/03/2025','Fechado','98 dias','Transferencia', 377.62,0,0, 22.43, 400.05,   0,   F_DANURI],
+  ['135164','17/03/2025','Fechado','98 dias','Transferencia',1723.25,0,0,109.91,1833.16,   0,   F_DANURI],
+  ['10067', '11/03/2025','Fechado','98 dias','Transferencia', 646.72,0,0, 25.88, 672.60,   0,   F_HAZAK]
+].map(r=>({nf:r[0],data:r[1],st:r[2],cond:r[3],forma:r[4],prod:r[5],desc:r[6],desp:r[7],imp:r[8],total:r[9],saldo:r[10],filial:r[11]}));
+
+const ITENS_NF = {
+  '152054':[['LM257','BULBO LED 10W 6000K 127V - DIMERIZAVEL',24,12.91,309.84],['LM340','BULBO LED 3,5W 127V/220V RGB - COM CONTROLE REMOTO',72,24.70,1778.40]],
+  'default':[['LM257','BULBO LED 10W 6000K 127V - DIMERIZAVEL',18,12.91,232.38],['LM340','BULBO LED 3,5W 127V/220V RGB - COM CONTROLE REMOTO',36,24.70,889.20]]
+};
+
+const PEDIDOS = [
+  ['94111','25/03/2026','Aberto',1037.05,0,0, 30.52,1067.57,   0.00,1067.57],
+  ['94014','23/03/2026','Aberto',2862.24,0,0,186.05,3048.29,2223.98, 824.31],
+  ['93855','18/03/2026','Aberto',2547.66,0,0, 74.94,2622.60,   0.00,2622.60],
+  ['93591','11/03/2026','Aberto', 703.31,0,0, 16.72, 720.03, 522.24, 197.79],
+  ['93590','11/03/2026','Aberto', 297.00,0,0, 28.96, 325.96,   0.00, 325.96],
+  ['93348','04/03/2026','Aberto',1291.61,0,0, 30.78,1322.39,1055.47, 266.92],
+  ['93102','25/02/2026','Aberto',4137.42,0,0,195.20,4332.62,3602.42, 730.20],
+  ['92873','18/02/2026','Aberto',1113.86,0,0, 48.63,1162.49, 948.77, 213.72],
+  ['92668','11/02/2026','Aberto',1781.38,0,0, 42.08,1823.46,1297.36, 526.10],
+  ['92435','04/02/2026','Aberto',1183.60,0,0, 67.31,1250.91, 982.37, 268.54],
+  ['92219','28/01/2026','Aberto',2417.56,0,0, 92.86,2510.42,1721.28, 789.14],
+  ['91940','21/01/2026','Aberto', 863.47,0,0, 34.14, 897.61, 710.84, 186.77],
+  ['91767','15/01/2026','Aberto', 680.01,0,0, 23.83, 703.84, 680.44,  23.40],
+  ['91674','14/01/2026','Aberto',6646.26,0,0,279.00,6925.26,6544.56, 380.70],
+  ['91064','10/12/2025','Fechado', 661.57,0,0, 33.64, 695.21, 678.29,  16.92],
+  ['90992','08/12/2025','Fechado',1387.80,0,0, 43.07,1430.87,1386.05,  44.82],
+  ['90723','03/12/2025','Fechado', 851.45,0,0, 19.18, 870.63, 870.63,   0.00],
+  ['90418','26/11/2025','Fechado', 717.50,0,0, 45.46, 762.96, 536.02, 226.94],
+  ['90417','26/11/2025','Fechado',1103.20,0,0, 68.16,1171.36, 446.46, 724.90],
+  ['90298','25/11/2025','Fechado',1481.96,0,0, 52.69,1534.65,1222.64, 312.01],
+  ['90285','25/11/2025','Fechado',1607.38,0,0, 67.01,1674.39,1374.35, 300.04],
+  ['89700','12/11/2025','Fechado',1819.74,0,0, 37.68,1857.42,1270.05, 587.37],
+  ['89422','05/11/2025','Fechado',2656.01,0,0,137.56,2793.57,2396.98, 396.59],
+  ['89155','29/10/2025','Fechado',2300.75,0,0,127.70,2428.45,2065.48, 362.97]
+].map(r=>({ped:r[0],data:r[1],st:r[2],prod:r[3],desc:r[4],desp:r[5],imp:r[6],total:r[7],fat:r[8],saldo:r[9],filial:F_DANURI}));
+
+const TITULOS = [
+  ['10067', '11/03/2025',1,'10/07/2025',382,'77855','07/03/2025', 672.60, 672.60,F_HAZAK],
+  ['140483','25/06/2025',1,'01/10/2025',299,'82984','18/06/2025',1064.00,1064.00,F_DANURI],
+  ['139237','28/05/2025',1,'10/10/2025',290,'81480','21/05/2025', 922.60, 922.60,F_DANURI],
+  ['139476','04/06/2025',1,'10/10/2025',290,'81896','28/05/2025',2814.68,2814.68,F_DANURI],
+  ['141095','07/07/2025',1,'13/10/2025',287,'83304','25/06/2025',2468.20,2468.20,F_DANURI],
+  ['141222','10/07/2025',1,'16/10/2025',284,'83666','02/07/2025',1019.64,1019.64,F_DANURI],
+  ['141599','17/07/2025',1,'23/10/2025',277,'84086','11/07/2025',1051.60,1051.60,F_DANURI],
+  ['141785','21/07/2025',1,'27/10/2025',273,'84051','10/07/2025',1450.78,1450.78,F_DANURI],
+  ['141947','23/07/2025',1,'29/10/2025',271,'84287','16/07/2025', 947.71, 947.71,F_DANURI],
+  ['142314','30/07/2025',1,'05/11/2025',264,'84642','23/07/2025',2359.95,2359.95,F_DANURI],
+  ['139793','10/06/2025',1,'10/11/2025',259,'82214','04/06/2025',1786.43,1786.43,F_DANURI],
+  ['142536','06/08/2025',1,'12/11/2025',257,'84998','30/07/2025', 486.91, 486.91,F_DANURI],
+  ['142977','14/08/2025',1,'20/11/2025',249,'85412','07/08/2025',1362.86,1362.86,F_DANURI],
+  ['143321','22/08/2025',1,'28/11/2025',241,'85717','13/08/2025',1642.85,1642.85,F_DANURI],
+  ['143777','29/08/2025',1,'05/12/2025',234,'86064','20/08/2025',1900.24,1900.24,F_DANURI],
+  ['144150','08/09/2025',1,'15/12/2025',224,'86405','27/08/2025',2354.32,2354.32,F_DANURI],
+  ['144512','16/09/2025',1,'23/12/2025',216,'86817','04/09/2025',3243.30,3243.30,F_DANURI],
+  ['144698','18/09/2025',1,'25/12/2025',214,'87022','10/09/2025',1297.06,1297.06,F_DANURI],
+  ['144841','22/09/2025',1,'29/12/2025',210,'87375','17/09/2025', 135.70, 135.70,F_DANURI],
+  ['144904','25/09/2025',1,'01/01/2026',207,'87555','19/09/2025',1054.61,1054.61,F_DANURI],
+  ['145003','26/09/2025',1,'02/01/2026',206,'87381','17/09/2025',2452.27,2452.27,F_DANURI],
+  ['145193','30/09/2025',1,'06/01/2026',202,'87708','24/09/2025', 573.05, 573.05,F_DANURI],
+  ['145706','10/10/2025',1,'16/01/2026',192,'88133','02/10/2025',3449.30,3449.30,F_DANURI],
+  ['145794','16/10/2025',1,'22/01/2026',186,'88336','08/10/2025',1102.16,1102.16,F_DANURI],
+  ['146120','21/10/2025',1,'27/01/2026',181,'88610','15/10/2025', 135.70, 135.70,F_DANURI],
+  ['146331','27/10/2025',1,'02/02/2026',175,'88612','15/10/2025',2071.06,2071.06,F_DANURI],
+  ['146511','30/10/2025',1,'05/02/2026',172,'88874','22/10/2025', 447.74, 447.74,F_DANURI],
+  ['146707','05/11/2025',1,'11/02/2026',166,'89155','29/10/2025',2065.48,2065.48,F_DANURI],
+  ['146954','11/11/2025',1,'17/02/2026',160,'89422','05/11/2025',2396.98,2396.98,F_DANURI],
+  ['147265','18/11/2025',1,'24/02/2026',153,'89700','12/11/2025',1270.05,1270.05,F_DANURI],
+  ['148022','03/12/2025',1,'11/03/2026',138,'90417','26/11/2025', 446.46, 446.46,F_DANURI],
+  ['148166','08/12/2025',1,'16/03/2026',133,'90285','25/11/2025',1374.35,1374.35,F_DANURI],
+  ['148433','11/12/2025',1,'19/03/2026',130,'90298','25/11/2025',1222.64,1222.64,F_DANURI],
+  ['148440','11/12/2025',1,'19/03/2026',130,'90418','26/11/2025', 536.02, 536.02,F_DANURI],
+  ['148541','15/12/2025',1,'23/03/2026',126,'90723','03/12/2025', 870.63, 870.63,F_DANURI],
+  ['148799','17/12/2025',1,'25/03/2026',124,'91064','10/12/2025', 678.29, 678.29,F_DANURI],
+  ['149085','16/01/2026',1,'24/04/2026', 94,'90992','08/12/2025',1386.05,1386.05,F_DANURI],
+  ['149532','23/01/2026',1,'01/05/2026', 87,'91767','15/01/2026', 680.44, 680.44,F_DANURI],
+  ['149590','26/01/2026',1,'04/05/2026', 84,'91674','14/01/2026',6544.56,6544.56,F_DANURI],
+  ['149715','28/01/2026',1,'06/05/2026', 82,'91940','21/01/2026', 710.84, 710.84,F_DANURI],
+  ['150035','03/02/2026',1,'12/05/2026', 76,'92219','28/01/2026',1721.28,1721.28,F_DANURI],
+  ['150159','09/02/2026',1,'18/05/2026', 70,'92435','04/02/2026', 982.37, 982.37,F_DANURI],
+  ['150426','18/02/2026',1,'27/05/2026', 61,'92668','11/02/2026',1297.36,1297.36,F_DANURI],
+  ['150523','20/02/2026',1,'29/05/2026', 59,'92873','18/02/2026', 948.77, 948.77,F_DANURI],
+  ['150786','26/02/2026',1,'04/06/2026', 53,'93102','25/02/2026',3602.42,3602.42,F_DANURI],
+  ['151226','10/03/2026',1,'16/06/2026', 41,'93348','04/03/2026',1055.47,1055.47,F_DANURI],
+  ['151584','17/03/2026',1,'23/06/2026', 34,'93591','11/03/2026', 522.24, 522.24,F_DANURI],
+  ['152054','26/03/2026',1,'02/07/2026', 25,'94014','23/03/2026',2223.98,2223.98,F_DANURI]
+].map(r=>({nf:r[0],dataNF:r[1],parcela:r[2],venc:r[3],dias:r[4],ped:r[5],dataPed:r[6],parc:r[7],aberto:r[8],filial:r[9]}));
+
+/* ---------- listas dos seletores (as mesmas do sistema) ---------- */
+const LISTAS = {
+  cliente:{titulo:'Unidade', itens:['LEROY MERLIN COMPANHIA BRASILEIRA DE BRICOLAGEM  ·  C012249']},
+  status: {titulo:'Status',  itens:['Cancelado','Fechado','Aberto']},
+  filial: {titulo:'Empresa emissora',  itens:['AURA PROJETOS DE ILUMINACAO LTDA','BARÃO ILUMINAÇÃO LTDA.','DANURI IMPORTACAO E EXPORTACAO LTDA - FL IP','DANURI IMPORTACAO E EXPORTACAO LTDA - SC','DANURI IMPORTACAO E EXPORTACAO LTDA - SP','DUNA ILUMINACAO LTDA','HAZAK ILUMINACAO LTDA','IVEN IMPORTACAO E EXPORTACAO LTDA - BA','IVEN IMPORTACAO E EXPORTACAO LTDA - SC','IVEN IMPORTACAO E EXPORTACAO LTDA - SP']},
+  representante:{titulo:'Representante', itens:['-Nenhum vendedor-','JOSE CARLOS SIMÃO DE GOUVEIA-MULTI COMMERCE REPRESENTAÇÕES COMERCIAIS LTDA','3LP REPRESENTACOES LTDA','ABAUER REPRESENTAÇÕES LTDA','ACT LUPARI GESTÃO','ADRIANO SILVA FERREIRA ASF SERRANA REPRESENTAÇOES EIRELI','AFIRMATIVA REPRESENTAÇÕES LTDA','AGUABELA REPRESENTAÇOES','AGUIA MARKETING LTDA','ALBERTO DE SOUZA TRAPIA']}
+};
+
+/* ---------- estado ---------- */
+const F = {
+  nf:{status:'', ordem:{c:'data',asc:false}},
+  ped:{status:'', ordem:{c:'data',asc:false}},
+  tab:{ordem:{c:'venc',asc:true}},
+  tat:{ordem:{c:'dias',asc:false}}
+};
+
+const tagSt = s => s==='Aberto' ? '<span class="tag tag--aberto"><i class="bolinha"></i>Aberto</span>'
+              : s==='Fechado'   ? '<span class="tag tag--ok"><i class="bolinha"></i>Fechado</span>'
+              : '<span class="tag tag--neutro"><i class="bolinha"></i>Cancelado</span>';
+const repCurto = `<span class="rep" title="${REP}">JOSE CARLOS SIMÃO DE GOUVEIA…</span>`;
+const filCurta = f => `<span class="fil" title="${f}">${f.replace('IMPORTACAO E EXPORTACAO LTDA','IMP. E EXP.').replace(' LTDA','')}</span>`;
+
+/* ================= RENDER ================= */
+function ordenar(l, ord, campos){
+  const {c,asc} = ord;
+  return l.sort((a,b)=>{
+    const f = campos[c]; if(!f) return 0;
+    const x=f(a), y=f(b);
+    return (x>y?1:x<y?-1:0)*(asc?1:-1);
+  });
+}
+
+function renderNF(){
+  let l = NOTAS.filter(n=>!F.nf.status || n.st===F.nf.status);
+  l = ordenar([...l], F.nf.ordem, {nf:a=>+a.nf, data:a=>dnum(a.data), prod:a=>a.prod, total:a=>a.total});
+  $('#tbodyNF').innerHTML = l.map(n=>`
+    <tr>
+      <td class="col-fixa forte">${n.nf}</td>
+      <td>${n.data}</td>
+      <td><button class="acao" data-itens="${n.nf}" title="Detalhamento dos itens da nota">${IC_INFO}</button></td>
+      <td><button class="acao acao--xml" data-toast="XML da NF ${n.nf} baixado." title="Baixar XML">${IC_XML}</button></td>
+      <td><button class="acao acao--pdf" data-toast="DANFE da NF ${n.nf} baixada." title="Baixar DANFE">${IC_PDF}</button></td>
+      <td>${tagSt(n.st)}</td>
+      <td>${repCurto}</td>
+      <td class="mudo">${n.cond}</td>
+      <td class="mudo">${n.forma}</td>
+      <td class="num">${brl(n.prod)}</td>
+      <td class="num zero">${brl(n.desc)}</td>
+      <td class="num zero">${brl(n.desp)}</td>
+      <td class="num mudo">${brl(n.imp)}</td>
+      <td class="num destaque">${brl(n.total)}</td>
+      <td class="num ${n.saldo>0?'saldo-aberto':'zero'}">${brl(n.saldo)}</td>
+      <td>${filCurta(n.filial)}</td>
+    </tr>`).join('');
+  $('#resumoNF').textContent = 'Notas fiscais de saída emitidas para o cliente';
+  $('#pagNF').innerHTML = `<b>${l.length}</b> Registro(s)`;
+}
+
+function renderPed(){
+  let l = PEDIDOS.filter(p=>!F.ped.status || p.st===F.ped.status);
+  l = ordenar([...l], F.ped.ordem, {ped:a=>+a.ped, data:a=>dnum(a.data), saldo:a=>a.saldo});
+  $('#tbodyPed').innerHTML = l.map(p=>`
+    <tr>
+      <td class="col-fixa forte">${p.ped}</td>
+      <td>${p.data}</td>
+      <td><button class="acao" data-itensped="${p.ped}" title="Detalhamento dos itens do pedido">${IC_INFO}</button></td>
+      <td><button class="acao acao--nf" data-nfsped="${p.ped}" title="Notas fiscais do pedido">${IC_PDF}</button></td>
+      <td>${tagSt(p.st)}</td>
+      <td>${repCurto}</td>
+      <td class="num">${brl(p.prod)}</td>
+      <td class="num zero">${brl(p.desc)}</td>
+      <td class="num zero">${brl(p.desp)}</td>
+      <td class="num mudo">${brl(p.imp)}</td>
+      <td class="num destaque">${brl(p.total)}</td>
+      <td class="num">${brl(p.fat)}</td>
+      <td class="num ${p.saldo>0?'saldo-aberto':'zero'}">${brl(p.saldo)}</td>
+      <td>${filCurta(p.filial)}</td>
+    </tr>`).join('');
+  $('#resumoPed').textContent = 'Pedidos de venda do cliente';
+  $('#pagPed').innerHTML = `<b>${l.length}</b> Registro(s)`;
+}
+
+function renderTit(qual){
+  const cfg = qual==='tab'?F.tab:F.tat;
+  const l = ordenar([...TITULOS], cfg.ordem, {nf:a=>+a.nf, venc:a=>dnum(a.venc), dias:a=>a.dias, valor:a=>a.aberto});
+  const body = l.map(t=>`
+    <tr class="linha-tit">
+      <td class="col-fixa forte">${t.nf}</td>
+      <td>${t.dataNF}</td>
+      <td>${t.parcela}</td>
+      <td>${t.venc}</td>
+      <td class="num dias">${t.dias}</td>
+      <td>${t.ped}</td>
+      <td>${t.dataPed}</td>
+      <td class="num">${brl(t.parc)}</td>
+      <td class="num destaque">${brl(t.aberto)}</td>
+      <td>${repCurto}</td>
+      <td>${filCurta(t.filial)}</td>
+    </tr>`).join('');
+  if(qual==='tab'){
+    $('#tbodyTab').innerHTML = body;
+    $('#resumoTab').textContent = 'Títulos financeiros em aberto';
+    $('#pagTab').innerHTML = `<b>${l.length}</b> Registro(s)`;
+  } else {
+    $('#tbodyTat').innerHTML = body;
+    $('#resumoTat').textContent = 'Títulos financeiros em atraso';
+    $('#pagTat').innerHTML = `<b>${l.length}</b> Registro(s)`;
+  }
+}
+
+/* ---------- ordenação ---------- */
+$$('[data-sortnf]').forEach(b=>b.onclick=()=>{ const c=b.dataset.sortnf; F.nf.ordem={c,asc:F.nf.ordem.c===c?!F.nf.ordem.asc:true}; renderNF(); });
+$$('[data-sortped]').forEach(b=>b.onclick=()=>{ const c=b.dataset.sortped; F.ped.ordem={c,asc:F.ped.ordem.c===c?!F.ped.ordem.asc:true}; renderPed(); });
+$$('[data-sorttab]').forEach(b=>b.onclick=()=>{ const c=b.dataset.sorttab; F.tab.ordem={c,asc:F.tab.ordem.c===c?!F.tab.ordem.asc:true}; renderTit('tab'); });
+$$('[data-sorttat]').forEach(b=>b.onclick=()=>{ const c=b.dataset.sorttat; F.tat.ordem={c,asc:F.tat.ordem.c===c?!F.tat.ordem.asc:true}; renderTit('tat'); });
+
+/* ---------- popover de seleção ---------- */
+let popCtx = null;
+function abrirPop(btn){
+  const tipo = btn.dataset.lista;
+  const lista = LISTAS[tipo];
+  popCtx = {btn, tipo};
+  const pop = $('#popLista'), r = btn.getBoundingClientRect();
+  pop.style.top  = Math.min(r.bottom+6, window.innerHeight-330)+'px';
+  pop.style.left = Math.min(r.left, window.innerWidth-360)+'px';
+  pop.style.width = Math.max(r.width, 300)+'px';
+  $('#popBusca').value = '';
+  desenharItens(lista.itens);
+  pop.classList.add('is-on');
+  setTimeout(()=>$('#popBusca').focus(), 30);
+}
+function desenharItens(itens){
+  $('#popItens').innerHTML = itens.length
+    ? itens.map(i=>`<button class="pop__op" data-op="${i.replace(/"/g,'&quot;')}">${i}</button>`).join('')
+    : '<div class="pop__nada">Nenhum resultado</div>';
+}
+$('#popBusca').oninput = e=>{
+  const q = e.target.value.toLowerCase();
+  desenharItens(LISTAS[popCtx.tipo].itens.filter(i=>i.toLowerCase().includes(q)));
+};
+$('#popItens').addEventListener('click', e=>{
+  const b = e.target.closest('[data-op]'); if(!b||!popCtx) return;
+  const v = b.dataset.op;
+  const span = popCtx.btn.querySelector('span');
+  span.textContent = v.split('  ·  ')[0];
+  span.classList.remove('ph');
+  if(popCtx.tipo==='cliente'){ toast('Indicadores atualizados para a unidade selecionada.'); }
+  if(popCtx.tipo==='status'){
+    const alvo = popCtx.btn.dataset.alvo;
+    if(alvo==='nf'){ F.nf.status=v; renderNF(); }
+    if(alvo==='ped'){ F.ped.status=v; renderPed(); }
+  }
+  fecharPop();
+});
+$('#popRemover').onclick = ()=>{
+  if(!popCtx) return;
+  const span = popCtx.btn.querySelector('span');
+  if(popCtx.tipo!=='cliente'){
+    span.textContent = popCtx.tipo==='filial' ? 'Todas' : 'Todos';
+    span.classList.add('ph');
+  }
+  if(popCtx.tipo==='cliente'){ toast('Indicadores atualizados para a unidade selecionada.'); }
+  if(popCtx.tipo==='status'){
+    const alvo = popCtx.btn.dataset.alvo;
+    if(alvo==='nf'){ F.nf.status=''; renderNF(); }
+    if(alvo==='ped'){ F.ped.status=''; renderPed(); }
+  }
+  fecharPop();
+};
+$('#popFechar').onclick = fecharPop;
+function fecharPop(){ $('#popLista').classList.remove('is-on'); popCtx=null; }
+document.addEventListener('click', e=>{
+  const b = e.target.closest('[data-lista]');
+  if(b){ e.stopPropagation(); if(popCtx && popCtx.btn===b) fecharPop(); else abrirPop(b); return; }
+  if(popCtx && !e.target.closest('#popLista')) fecharPop();
+});
+
+/* ---------- limpar ---------- */
+$$('[data-limpar]').forEach(b=>b.onclick=()=>{
+  const p = b.dataset.limpar;
+  $$('#params-'+p+' .ctrl span').forEach(s=>{
+    if(s.closest('.campo').querySelector('label').textContent.includes('Unidade')) return;
+    s.textContent = s.closest('.campo').querySelector('label').textContent.includes('Empresa') ? 'Todas' : 'Todos';
+    s.classList.add('ph');
+  });
+  $$('#params-'+p+' input').forEach(i=>i.value='');
+  if(p==='nf'){ F.nf.status=''; renderNF(); }
+  if(p==='ped'){ F.ped.status=''; renderPed(); }
+  toast('Parâmetros limpos.');
+});
+
+/* ---------- Parâmetros: recolher / mostrar ---------- */
+$('#btnParametros').onclick = ()=>{
+  const p = $('.page.is-active .params');
+  if(!p) return;
+  p.classList.toggle('is-hidden');
+  $('#btnParametros').classList.toggle('btn--acento', !p.classList.contains('is-hidden'));
+};
+
+/* ---------- drawer (no lugar da janela em tela cheia) ---------- */
+function abrirDrawer(titulo, sub, html){
+  $('#drawerTitulo').textContent = titulo;
+  $('#drawerSub').textContent = sub;
+  $('#drawerBody').innerHTML = html;
+  $('#drawer').classList.add('is-open');
+  $('#drawerFundo').classList.add('is-on');
+}
+function fecharDrawer(){ $('#drawer').classList.remove('is-open'); $('#drawerFundo').classList.remove('is-on'); }
+$('#drawerFechar').onclick = fecharDrawer;
+$('#drawerFundo').onclick = fecharDrawer;
+
+function tabelaItens(itens){
+  return `<table class="tbl-drawer">
+    <thead><tr><th>Código do Item</th><th>Descrição</th><th class="num">Quantidade</th><th class="num">Preço Unitário</th><th class="num">Total da Linha</th></tr></thead>
+    <tbody>${itens.map(i=>`<tr><td class="forte">${i[0]}</td><td>${i[1]}</td><td class="num">${i[2]}</td><td class="num">${brl(i[3])}</td><td class="num destaque">${brl(i[4])}</td></tr>`).join('')}</tbody>
+    </table><div class="drawer__reg">${itens.length} Registro(s)</div>`;
+}
+document.addEventListener('click', e=>{
+  const bi = e.target.closest('[data-itens]');
+  if(bi) abrirDrawer('Detalhamento dos Itens da Nota Fiscal de Saída','NF '+bi.dataset.itens, tabelaItens(ITENS_NF[bi.dataset.itens]||ITENS_NF.default));
+  const bp = e.target.closest('[data-itensped]');
+  if(bp) abrirDrawer('Detalhamento dos Itens do Pedido de Venda','Pedido '+bp.dataset.itensped, tabelaItens(ITENS_NF.default));
+  const bn = e.target.closest('[data-nfsped]');
+  if(bn){
+    const p = PEDIDOS.find(x=>x.ped===bn.dataset.nfsped);
+    const n = p && p.fat>0 ? NOTAS.find(x=>Math.abs(x.total-p.fat)<0.01) : null;
+    abrirDrawer('Detalhamento de Notas Fiscais de Saída Relacionadas ao Pedido de Venda','Pedido '+bn.dataset.nfsped,
+      n ? `<table class="tbl-drawer"><thead><tr><th>Número NF</th><th>Data Lançamento</th><th>Status</th><th class="num">Total Documento</th></tr></thead>
+           <tbody><tr><td class="forte">${n.nf}</td><td>${n.data}</td><td>${tagSt(n.st)}</td><td class="num destaque">${brl(n.total)}</td></tr></tbody></table><div class="drawer__reg">1 Registro(s)</div>`
+        : `<div class="vazio-drawer">
+             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>
+             <b>Nenhum registro encontrado</b>
+             <span>Este pedido ainda não tem nota fiscal emitida.</span>
+           </div>`);
+  }
+});
+
+/* ---------- navegação ---------- */
+const PAG = {
+  dash:['LUMINATTI_HMG','Dashboard Gerencial'],
+  nf:  ['LUMINATTI_HMG · Relatórios','Relatório de Notas Fiscais'],
+  ped: ['LUMINATTI_HMG · Relatórios','Relatório de Pedidos'],
+  tab: ['LUMINATTI_HMG · Relatórios','Relatório de Títulos em Aberto'],
+  tat: ['LUMINATTI_HMG · Relatórios','Relatório de Títulos em Atraso']
+};
+function irPara(p){
+  $$('.page').forEach(s=>s.classList.toggle('is-active', s.id==='page-'+p));
+  $$('.nav__item').forEach(b=>b.classList.toggle('is-active', b.dataset.page===p));
+  $('#crumb').textContent = PAG[p][0];
+  $('#titulo').textContent = PAG[p][1];
+  $('.content').scrollTop = 0;
+  fecharPop();
+}
+$$('.nav__item[data-page]').forEach(b=>b.onclick=()=>irPara(b.dataset.page));
+$$('[data-goto]').forEach(b=>b.addEventListener('click',()=>irPara(b.dataset.goto)));
+
+/* ---------- start ---------- */
+renderNF(); renderPed(); renderTit('tab'); renderTit('tat');
+
+</script>
+</body>
+</html>
