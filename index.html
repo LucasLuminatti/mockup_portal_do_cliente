@@ -784,7 +784,7 @@ tr.hist-ficha td{padding:0 13px 18px;background:var(--n-050);white-space:normal}
 
   <div class="dash-linha2">
     <div class="card dash-hoje">
-      <div class="card__head"><div><h3>Precisa da sua atenção</h3><p>Hoje, 03/09/2026 · não depende do período</p></div></div>
+      <div class="card__head"><div><h3>Precisa da sua atenção</h3><p id="dashHojeSub">Hoje · não depende do período</p></div></div>
       <div id="dashHoje"></div>
     </div>
     <div class="card">
@@ -876,7 +876,7 @@ tr.hist-ficha td{padding:0 13px 18px;background:var(--n-050);white-space:normal}
       <button class="limpar" id="histLimpar" aria-label="Limpar busca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
     <span class="filtros__label">Período</span>
-    <div class="seg" id="histSeg"><button data-periodo="m12">12 meses</button><button data-periodo="esteAno">Este ano</button><button data-periodo="tudo" class="is-on">Desde jan/2025</button></div>
+    <div class="seg" id="histSeg"><button data-periodo="m12">12 meses</button><button data-periodo="esteAno">Este ano</button><button data-periodo="tudo" class="is-on">Todo o período</button></div>
   </div>
   <p class="frase-resumo" id="histResumo"></p>
   <div class="card">
@@ -987,8 +987,9 @@ const dnum = s => s.split('/').reverse().join('');
 const somarDias = (s,n) => { const d=dataDe(s); d.setDate(d.getDate()+n); return dataStr(d); };
 const diasEntre = (a,b) => Math.round((dataDe(b)-dataDe(a))/86400000);
 const mesRot = (a,m) => `${MESES[m-1]}/${a}`;
-const mesIdx = (a,m) => (a-2024)*12 + (m-1);
-const idxMes = i => ({a:2024+Math.floor(i/12), m:(i%12)+1});
+const mesIdx = (a,m) => (a-2000)*12 + (m-1);
+const idxMes = i => ({a:2000+Math.floor(i/12), m:(i%12)+1});
+const mesAntes = (a,m,n) => idxMes(mesIdx(a,m)-n);
 const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const semAcento = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 
@@ -1060,7 +1061,7 @@ const itemPorLm = lm => CATALOGO.find(i=>i.lm===lm);
 function precoNoMes(lm, a, m){
   const it = itemPorLm(lm); const i = mesIdx(a,m);
   const r = rng(i*131 + lm.charCodeAt(2)*7 + lm.charCodeAt(3)*13 + lm.charCodeAt(4)*17)();
-  return Math.round(it.base * (1 + 0.0035*(i-12)) * (0.965 + r*0.075) * 100)/100;
+  return Math.round(it.base * (1 + 0.0035*(i-mesIdx(2025,1))) * (0.965 + r*0.075) * 100)/100;
 }
 
 /* alvos mensais (todas as lojas somadas), em R$ mil — 2026 cresce ~22% sobre jan–ago/2025, com queda em março */
@@ -1122,7 +1123,7 @@ function chaveNF(num, a, m, cnpj){
 }
 
 /* meses jan/2025 … ago/2026 */
-for(let i=12;i<=mesIdx(2026,8);i++){
+for(let i=mesIdx(2025,1);i<=mesIdx(2026,8);i++){
   const {a,m} = idxMes(i);
   LOJAS.forEach((l,li)=>{
     const r = rng(a*1000 + m*31 + li*7);
@@ -1351,21 +1352,22 @@ function sair(){
 $('#btnSair').onclick = ()=>{ $('#userMenu').classList.remove('is-on'); sair(); };
 $('#btnSessao').onclick = sair;
 
-/* pôster do login: 12 pares de barras (2025 preto × 2026 amarelo), alturas reais */
-(function(){
+/* pôster do login: 12 pares de barras (ano anterior × ano atual), alturas reais */
+function desenharPoster(){
   const w=420,h=140, gw=w/12;
-  const vals25 = Array.from({length:12},(_,i)=>totalMes(2025,i+1)), vals26 = Array.from({length:12},(_,i)=>i<8?totalMes(2026,i+1):0);
-  const max = Math.max(...vals25, ...vals26);
+  const vals25 = Array.from({length:12},(_,i)=>totalMes(HOJE.a-1,i+1)), vals26 = Array.from({length:12},(_,i)=>i<HOJE.m-1?totalMes(HOJE.a,i+1):0);
+  const max = Math.max(1, ...vals25, ...vals26);
   let s = `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Compras mensais de 2025 e 2026">`;
   for(let i=0;i<12;i++){
     const x = i*gw+4, bw=(gw-10)/2;
     const h25 = vals25[i]/max*(h-8), h26 = vals26[i]/max*(h-8);
     s += `<rect x="${x}" y="${h-h25}" width="${bw}" height="${h25}" rx="2" fill="#ffffff" opacity=".85"/>`;
-    s += i<8 ? `<rect x="${x+bw+2}" y="${h-h26}" width="${bw}" height="${h26}" rx="2" fill="#F5B53F"/>`
+    s += i<HOJE.m-1 ? `<rect x="${x+bw+2}" y="${h-h26}" width="${bw}" height="${h26}" rx="2" fill="#F5B53F"/>`
              : `<rect x="${x+bw+2}" y="${h-h25*0.9}" width="${bw}" height="${h25*0.9}" rx="2" fill="none" stroke="rgba(255,255,255,.35)" stroke-dasharray="3 3"/>`;
   }
   $('#loginPoster').innerHTML = s + '</svg>';
-})();
+}
+desenharPoster();
 
 /* =====================================================================
    POPOVER DE SELEÇÃO (lista com busca) — genérico
@@ -1556,20 +1558,26 @@ const PERIODOS = {
 const seqMeses = (aFim, mFim, n) => { const out=[]; let i=mesIdx(aFim,mFim); for(let k=0;k<n;k++){ out.unshift(idxMes(i)); i--; } return out; };
 const rotIntervalo = ms => { if(ms.length===1) return `${MESES[ms[0].m-1]}/${ms[0].a}`; const a=ms[0], b=ms[ms.length-1]; return a.a===b.a ? `${MESES[a.m-1]}–${MESES[b.m-1]} ${a.a}` : `${MESES[a.m-1]}/${a.a} – ${MESES[b.m-1]}/${b.a}`; };
 function calcPeriodo(chave, custom){
-  let atual, anterior, modo='periodo', notaExtra='';
+  let atual, anterior, modo='periodo';
+  const A = HOJE.a, M = HOJE.m;
+  const ult = mesAntes(A, M, 1);              // último mês completo
+  const fechados = M - 1;                     // meses completos no ano atual
   switch(chave){
-    case 'esteMes':    atual=[{a:2026,m:9}]; anterior=[{a:2026,m:8}]; break;
-    case 'mesPassado': atual=[{a:2026,m:8}]; anterior=[{a:2026,m:7}]; break;
-    case 'm3':  atual=seqMeses(2026,8,3);  anterior=seqMeses(2026,5,3);  break;
-    case 'm6':  atual=seqMeses(2026,8,6);  anterior=seqMeses(2026,2,6);  break;
-    case 'm12': atual=seqMeses(2026,8,12); anterior=seqMeses(2025,8,12); break;
-    case 'esteAno': case 'y2026': atual=seqMeses(2026,8,8); anterior=seqMeses(2025,8,8); break;
-    case 'anoPassado': case 'y2025': atual=seqMeses(2025,12,12); anterior=seqMeses(2024,12,12); modo='ano'; break;
-    case 'y2025x2026': atual=seqMeses(2026,8,8); anterior=seqMeses(2025,8,8); modo='ano'; break;
+    case 'esteMes':    atual=[{a:A,m:M}]; anterior=[ult]; break;
+    case 'mesPassado': atual=[ult]; anterior=[mesAntes(ult.a,ult.m,1)]; break;
+    case 'm3':  { atual=seqMeses(ult.a,ult.m,3);  const f=mesAntes(ult.a,ult.m,3);  anterior=seqMeses(f.a,f.m,3);  break; }
+    case 'm6':  { atual=seqMeses(ult.a,ult.m,6);  const f=mesAntes(ult.a,ult.m,6);  anterior=seqMeses(f.a,f.m,6);  break; }
+    case 'm12': { atual=seqMeses(ult.a,ult.m,12); const f=mesAntes(ult.a,ult.m,12); anterior=seqMeses(f.a,f.m,12); break; }
+    case 'esteAno': case 'y2026': case 'y2025x2026':
+      if(fechados>=1){ atual=seqMeses(A,fechados,fechados); anterior=seqMeses(A-1,fechados,fechados); }
+      else { atual=[{a:A,m:1}]; anterior=[{a:A-1,m:1}]; }
+      if(chave==='y2025x2026') modo='ano';
+      break;
+    case 'anoPassado': case 'y2025': atual=seqMeses(A-1,12,12); anterior=seqMeses(A-2,12,12); modo='ano'; break;
     case 'personalizado': {
-      const ini = custom && custom.ini ? custom.ini : {a:2026,m:1}, fim = custom && custom.fim ? custom.fim : {a:2026,m:8};
+      const ini = custom && custom.ini ? custom.ini : {a:A,m:1}, fim = custom && custom.fim ? custom.fim : ult;
       const n = Math.max(1, mesIdx(fim.a,fim.m)-mesIdx(ini.a,ini.m)+1);
-      atual = seqMeses(fim.a,fim.m,n); anterior = seqMeses(ini.a,ini.m,1).length ? (()=>{ const i=mesIdx(ini.a,ini.m)-1; const {a,m}=idxMes(i); return seqMeses(a,m,n); })() : [];
+      atual = seqMeses(fim.a,fim.m,n); const f = mesAntes(ini.a,ini.m,1); anterior = seqMeses(f.a,f.m,n);
       break; }
     default: return calcPeriodo('y2025x2026');
   }
@@ -1717,7 +1725,8 @@ function dashRender(){
   $('#dashPeriodoBtn').classList.toggle('is-on', !ehAtalho);
   $('#dashPeriodoRot').textContent = ehAtalho ? 'Outro período' : PERIODOS[DASH.periodo].rot;
   $('#dashCustom').hidden = DASH.periodo!=='personalizado';
-  $('#dashSub').textContent = `${ehAno && DASH.periodo==='y2025x2026' ? 'jan–ago 2026 comparado com jan–ago 2025' : `${per.rotAtual} comparado com ${per.rotAnterior}`}${loja==='todas' ? ' · 3 lojas somadas' : ' · só '+nomeLoja(loja)}`;
+  $('#dashSub').textContent = `${per.rotAtual} comparado com ${per.rotAnterior}${loja==='todas' ? ` · ${LOJAS.length} lojas somadas` : ' · só '+nomeLoja(loja)}`;
+  const faixa = ' · ' + per.rotAtual.replace(/ \d{4}$/,'');
 
   /* meses acima do anterior (par a par) */
   const pares = per.atual.map((m,i)=>({atu:totalMes(m.a,m.m,loja), ant:per.anterior[i] ? totalMes(per.anterior[i].a, per.anterior[i].m, loja) : 0}));
@@ -1728,11 +1737,11 @@ function dashRender(){
     $('#dashPlacar').innerHTML = `<div class="vazio">${IC.lampada}<b>Nenhuma compra registrada em ${per.atual.length===1 ? MESES_LONGO[per.atual[0].m-1] : per.rotAtual} até ${HOJE_STR.slice(0,5)}.</b><span>${totAnt ? `Em ${nomeAnt} foram ${brl(totAnt)}. As compras aparecem aqui assim que a nota fiscal for emitida.` : 'As compras aparecem aqui assim que a nota fiscal for emitida.'}</span></div>`;
   } else {
     $('#dashPlacar').innerHTML = `
-      <div><div class="dash-placar__rot">${esc(nomeAtu)}${ehAno && DASH.periodo==='y2025x2026' ? ' · jan–ago' : ''}</div><div class="dash-placar__num dash-placar__num--atual">${brl(totAtu)}</div></div>
-      <div><div class="dash-placar__rot">${esc(nomeAnt)}${ehAno && DASH.periodo==='y2025x2026' ? ' · jan–ago' : ''}</div><div class="dash-placar__num dash-placar__num--anterior">${totAnt ? brl(totAnt) : '—'}</div></div>
+      <div><div class="dash-placar__rot">${esc(nomeAtu)}${ehAno && DASH.periodo==='y2025x2026' ? faixa : ''}</div><div class="dash-placar__num dash-placar__num--atual">${brl(totAtu)}</div></div>
+      <div><div class="dash-placar__rot">${esc(nomeAnt)}${ehAno && DASH.periodo==='y2025x2026' ? faixa : ''}</div><div class="dash-placar__num dash-placar__num--anterior">${totAnt ? brl(totAnt) : '—'}</div></div>
       ${totAnt ? `<div class="dash-placar__delta">${tend(delta)}<span>${brl(Math.abs(totAtu-totAnt))} ${totAtu>=totAnt?'a mais':'a menos'}</span></div>
       <div class="dash-placar__frase">${pares.length>1 ? `${acima} de ${pares.length} meses acima de ${esc(nomeAnt)}.` : (delta>=0 ? 'Acima do período anterior.' : 'Abaixo do período anterior.')}</div>` : '<div class="dash-placar__frase">Ainda não há um período anterior para comparar.</div>'}
-      ${ehAno && DASH.periodo==='y2025x2026' ? `<div class="dash-placar__extra">2025 inteiro: ${brl(somaMeses(seqMeses(2025,12,12), loja))}</div>` : ''}`;
+      ${ehAno && DASH.periodo==='y2025x2026' ? `<div class="dash-placar__extra">${rotAnoAnt} inteiro: ${brl(somaMeses(seqMeses(rotAnoAnt,12,12), loja))}</div>` : ''}`;
   }
 
   /* gráfico */
@@ -1766,7 +1775,7 @@ function dashRender(){
         <span class="dash-loja__nome">${esc(x.l.nome)}<small>${esc(x.l.cidadeUF)}</small></span>
         <span class="dash-loja__barras"><i style="width:${x.atu/max*100}%"></i><i class="ant" style="width:${x.ant/max*100}%"></i></span>
         <span class="dash-loja__vals">${brlCurto(x.atu)}<small>${x.ant?brlCurto(x.ant):'—'}</small>${x.ant?' '+tend((x.atu-x.ant)/x.ant*100):''}</span></button>`).join('')}</div>
-      <div class="legenda"><span><i style="background:var(--serie-atual)"></i>${esc(nomeAtu)}</span><span><i style="background:var(--serie-anterior)"></i>${esc(nomeAnt)}</span><span class="mudo">Soma das 3 lojas = ${brl(totAtu)}</span></div>`;
+      <div class="legenda"><span><i style="background:var(--serie-atual)"></i>${esc(nomeAtu)}</span><span><i style="background:var(--serie-anterior)"></i>${esc(nomeAnt)}</span><span class="mudo">Soma das ${LOJAS.length} lojas = ${brl(totAtu)}</span></div>`;
   } else {
     $('#dashPorLojaSub').textContent = 'Você está vendo uma loja';
     $('#dashPorLoja').innerHTML = `<p class="dash-loja__so">Estes números são só de <b>${esc(nomeLoja(loja))}</b> (${loja}).<br><button class="link" data-loja-sel="todas">Ver as ${LOJAS.length} lojas somadas</button></p>`;
@@ -1792,7 +1801,8 @@ function dashRender(){
   $('#dashNota').innerHTML = notaSPS('os totais mensais são a soma de <b>ORDR › OINV (DocTotal)</b> das notas emitidas para os CardCodes filhos do cliente; em "Todas as lojas" somar os filhos do Father Card. "Período anterior equivalente" = mesmo número de meses inteiros imediatamente antes; "Este mês" compara com o mês anterior completo. A zona "Hoje" não depende do período.');
 }
 
-REG.dash = {titulo:'Visão geral', render(params){ if(params && params.periodo){ DASH.periodo = params.periodo; } dashRender(); }};
+REG.dash = {titulo:'Visão geral', render(params){ if(params && params.periodo){ DASH.periodo = params.periodo; } dashRotulos(); dashRender(); }};
+function dashRotulos(){ $('#page-dash [data-periodo="y2025"]').textContent = HOJE.a-1; $('#page-dash [data-periodo="y2026"]').textContent = HOJE.a; $('#page-dash [data-periodo="y2025x2026"]').textContent = `${HOJE.a-1} × ${HOJE.a}`; $('#dashHojeSub').textContent = `Hoje, ${HOJE_STR} · não depende do período`; }
 
 $$('#page-dash [data-periodo]').forEach(b=>b.addEventListener('click', ()=>{ DASH.periodo = b.dataset.periodo; dashRender(); if(DASH.periodo==='personalizado') setTimeout(()=>$('#dashIni').focus(),30); }));
 $('#dashPeriodoBtn').onclick = e=>{
@@ -1950,7 +1960,7 @@ function nfSituacao(n){ const t = TITULOS.filter(x=>x.nf===n.num); if(t.some(x=>
 const NF_TAG = {vencida:'<span class="tag tag--erro"><i class="bolinha"></i>Vencida</span>', aberta:'<span class="tag tag--aberto"><i class="bolinha"></i>Em aberto</span>', paga:'<span class="tag tag--ok"><i class="bolinha"></i>Paga</span>'};
 function nfDentroPeriodo(n){
   if(NF.mes) return n.a===NF.mes.a && n.m===NF.mes.m;
-  switch(NF.periodo){ case 'esteAno': return n.a===2026; case 'anoPassado': return n.a===2025; case 'm12': return mesIdx(n.a,n.m) > mesIdx(2025,8); default: return true; }
+  switch(NF.periodo){ case 'esteAno': return n.a===HOJE.a; case 'anoPassado': return n.a===HOJE.a-1; case 'm12': return mesIdx(n.a,n.m) > mesIdx(HOJE.a,HOJE.m)-13; default: return true; }
 }
 function nfRender(){
   const base = filtrarPorLoja(NOTAS).filter(nfDentroPeriodo).filter(n=>NF.emissora==='todas' || n.emissora===NF.emissora);
@@ -1965,7 +1975,7 @@ function nfRender(){
 
   let l = base.filter(n=>NF.pag==='todas' || nfSituacao(n)===NF.pag);
   const q = NF.busca.trim(); if(q) l = l.filter(n=>n.num.includes(q) || n.pedido.includes(q));
-  const rotPer = NF.mes ? `em ${MESES_LONGO[NF.mes.m-1]} de ${NF.mes.a}` : {esteAno:'em 2026', anoPassado:'em 2025', m12:'nos últimos 12 meses', todas:'desde 2025'}[NF.periodo];
+  const rotPer = NF.mes ? `em ${MESES_LONGO[NF.mes.m-1]} de ${NF.mes.a}` : {esteAno:`em ${HOJE.a}`, anoPassado:`em ${HOJE.a-1}`, m12:'nos últimos 12 meses', todas:'em todo o período'}[NF.periodo];
   $('#nfResumo').innerHTML = base.length ? `<b>${base.length} ${base.length===1?'nota':'notas'}</b> ${rotPer}${consolidado()?` nas ${LOJAS.length} lojas`:''}, somando <b>${brl(base.reduce((s,n)=>s+n.total,0))}</b>.${cont.vencida?` <span class="mudo">${cont.vencida} com boleto vencido.</span>`:''}` : `Nenhuma nota fiscal ${rotPer}.`;
   const cons = consolidado();
   if(!l.length){ $('#nfTabela').innerHTML = vazio('Nenhuma nota fiscal aqui', base.length ? 'Tente outro filtro ou outra busca.' : 'Nenhuma nota fiscal neste período. Assim que um pedido for faturado, a nota aparece aqui com XML e DANFE.'); $('#nfFoot').innerHTML=''; return; }
@@ -2008,7 +2018,7 @@ $('#nfTabela').addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' '
 /* Itens e preços — "quanto paguei na dicroica?": busca por LM/descrição, ficha com histórico de preços */
 const HIST = {busca:'', periodo:'tudo', ord:{c:'total',asc:false}, abertos:new Set()};
 
-function histDentroPeriodo(n){ switch(HIST.periodo){ case 'esteAno': return n.a===2026; case 'm12': return mesIdx(n.a,n.m) > mesIdx(2025,8); default: return true; } }
+function histDentroPeriodo(n){ switch(HIST.periodo){ case 'esteAno': return n.a===HOJE.a; case 'm12': return mesIdx(n.a,n.m) > mesIdx(HOJE.a,HOJE.m)-13; default: return true; } }
 /* compras do item no período (uma linha por nota) */
 function comprasDoItem(lm){
   const out = [];
@@ -2028,7 +2038,7 @@ function histRender(){
   $$('#histSeg button').forEach(b=>b.classList.toggle('is-on', b.dataset.periodo===HIST.periodo));
   $('#histLimpar').classList.toggle('is-on', !!HIST.busca);
   let fichas = CATALOGO.filter(i=>!q || semAcento(i.lm+' '+i.desc+' '+i.familia).includes(q)).map(i=>fichaItem(i.lm)).filter(Boolean);
-  const rotPer = {m12:'nos últimos 12 meses', esteAno:'em 2026', tudo:'desde jan/2025'}[HIST.periodo];
+  const rotPer = {m12:'nos últimos 12 meses', esteAno:`em ${HOJE.a}`, tudo:'em todo o período'}[HIST.periodo];
   if(!fichas.length){
     $('#histResumo').innerHTML = q ? `Nenhum item com “<b>${esc(HIST.busca.trim())}</b>” ${rotPer}.` : `Nenhuma compra ${rotPer}.`;
     $('#histTabela').innerHTML = vazio(q ? 'Nenhum item encontrado' : 'Nenhuma compra no período', q ? 'Tente o código LM (ex.: LM108) ou parte da descrição (ex.: dicroica, bulbo, fita).' : 'Escolha outro período.');
@@ -2119,7 +2129,7 @@ function finRender(){
       <td><button class="link" data-drawer-pedido="${t.pedido}">${t.pedido}</button></td>
       <td><span class="nf-emp">${esc(EMPRESAS_EMISSORAS[t.emissora].curto)}</span></td>
       <td class="fin-venc ${s==='vencido'?'is-vencido':''}">${t.venc}</td>
-      <td>${tagTitulo(t)}${s==='pago'?`<br><span class="fin-pago">em ${t.dataPagamento}</span>`:''}</td>
+      <td>${tagTitulo(t)}${s==='pago'&&t.dataPagamento?`<br><span class="fin-pago">em ${t.dataPagamento}</span>`:''}</td>
       <td class="num">${brl(t.valor)}</td>
       <td class="num"><span class="fin-atual">${brl(va)}${va>t.valor?`<small>+ ${brl(va-t.valor)} de multa e juros</small>`:''}</span></td>
       <td><button class="acao acao--txt" data-drawer-boleto="${t.nf}|${t.parcela}">${s==='pago' ? 'Ver detalhes' : t.forma==='Boleto' ? 'Ver boleto' : 'Transferência'}</button></td></tr>`; };
@@ -2167,7 +2177,7 @@ function abrirDrawerBoleto(nf, parcela, opts={}){
   const cadeia = `<div class="cadeia">${IC.caixa}<button class="link" data-drawer-pedido="${t.pedido}">Pedido ${t.pedido}</button>${IC.seta}<button class="link" data-drawer-nota="${t.nf}">NF ${t.nf}</button>${IC.seta}<span>${t.forma==='Boleto'?'este boleto':'este título'}</span></div>`;
   const cabeca = `
     <div class="bol-valor">${brl(va)}</div>
-    <div class="bol-valor__sub">${s==='pago' ? `Pago em <b>${t.dataPagamento}</b> · valor original ${brl(t.valor)}` : s==='vencido' ? `valor atualizado em ${HOJE_STR} · original <b>${brl(t.valor)}</b> + multa 2% + juros de ${atraso} ${atraso===1?'dia':'dias'} (${brl(va-t.valor)})` : `valor original · sem juros até o vencimento`}</div>
+    <div class="bol-valor__sub">${s==='pago' ? `Pago${t.dataPagamento?` em <b>${t.dataPagamento}</b>`:''} · valor original ${brl(t.valor)}` : s==='vencido' ? `valor atualizado em ${HOJE_STR} · original <b>${brl(t.valor)}</b> + multa 2% + juros de ${atraso} ${atraso===1?'dia':'dias'} (${brl(va-t.valor)})` : `valor original · sem juros até o vencimento`}</div>
     <div class="bol-venc">Vencimento <b>${t.venc}</b> ${tagTitulo(t)}</div>
     <dl class="def" style="margin-top:18px">
       <div><dt>Beneficiário</dt><dd>${esc(emp.nome)} <small>CNPJ ${emp.cnpj}</small></dd></div>
@@ -2182,6 +2192,7 @@ function abrirDrawerBoleto(nf, parcela, opts={}){
       <div class="drawer__sec"><h4>Linha digitável</h4>
         <div class="bol-linha"><code>${b.linhaDigitavel}</code><button class="btn btn--sm" data-copiar="${b.linhaDigitavel.replace(/[ .]/g,'')}" data-copiar-msg="Linha digitável copiada.">${IC.copiar}Copiar</button></div>
         <div class="bol-barras">${svgITF(b.codigoBarras)}<small>${b.codigoBarras.replace(/(\d{4})(?=\d)/g,'$1 ')}</small></div>
+        <p class="mudo" style="margin-top:8px">Códigos gerados para demonstração. No portal real, vêm do boleto registrado no banco.</p>
       </div>
       <div class="drawer__sec"><h4>Pix</h4>
         ${t.temPix ? `<div class="bol-pix">${svgQR(b.pix)}<div><p class="mudo">Aponte a câmera do app do banco ou use o código abaixo. O Pix quita o boleto com o mesmo valor atualizado.</p><code>${b.pix}</code><button class="btn btn--sm" data-copiar="${b.pix}" data-copiar-msg="Código Pix copiado.">${IC.copiar}Copiar código Pix</button></div></div>`
