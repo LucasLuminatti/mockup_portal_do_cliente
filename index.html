@@ -14,18 +14,18 @@
   --amarelo:#FCC972; --amarelo-suave:#FFF3DF; --amarelo-linha:#F4B84E; --amarelo-borda:#F3DCB4; --amarelo-texto:#7A5410;
   --cinza:#585857; --preto:#1D1D1B; --branco:#ffffff;
   /* neutros */
-  --n-000:#ffffff; --n-050:#FAFAF9; --n-100:#F4F4F2; --n-200:#EAEAE7; --n-300:#DEDEDA; --n-400:#B9B9B4; --n-500:#8C8C88;
-  --texto-mudo:#6F6F6B;
+  --n-000:#ffffff; --n-050:#F7F7F5; --n-100:#EFEFEC; --n-200:#DEDEDA; --n-300:#C9C9C4; --n-400:#A3A39E; --n-500:#7A7A76;
+  --texto-mudo:#585857;
   /* semânticos (dessaturados, contraste AA) */
-  --ok:#276E50; --ok-bg:#EAF5EF; --alerta:#8F5A0E; --alerta-bg:#FDF3E3; --erro:#B03A2E; --erro-bg:#FBEDEB; --info:#356B8F; --info-bg:#EBF2F7;
+  --ok:#1F6B4A; --ok-bg:#DCEFE4; --alerta:#8A540A; --alerta-bg:#FBEACB; --erro:#A8322A; --erro-bg:#F9DCD8; --info:#2C5F82; --info-bg:#DCE8F2;
   /* séries */
-  --serie-atual:var(--amarelo); --serie-anterior:var(--preto); --serie-futuro:var(--n-300); --grade:var(--n-200); --media:var(--amarelo-linha);
+  --serie-atual:#F5B53F; --serie-anterior:var(--preto); --serie-futuro:var(--n-300); --grade:var(--n-200); --media:#D99A1E;
   /* tipografia */
   --fs-display:34px; --fs-hero2:28px; --fs-xl:22px; --fs-h1:20px; --fs-h2:15px; --fs-body:13.5px; --fs-sm:12px; --fs-xs:11px; --fs-th:10.5px; --ls-caps:.07em;
   /* forma */
   --raio:10px; --raio-sm:7px;
   --sombra:0 1px 2px rgba(29,29,27,.04), 0 8px 24px rgba(29,29,27,.06); --sombra-sm:0 1px 2px rgba(29,29,27,.05);
-  --foco:0 0 0 1px var(--amarelo-linha), 0 0 0 4px var(--amarelo-suave);
+  --foco:0 0 0 2px var(--branco), 0 0 0 4px var(--preto);
   --sidebar-w:250px; --topbar-h:66px; --drawer-w:660px; --email-w:600px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -43,7 +43,7 @@ svg{display:inline-block}
 ::-webkit-scrollbar-track{background:transparent}
 [hidden]{display:none!important}
 .num,.tabular{font-variant-numeric:tabular-nums}
-.mudo{color:var(--texto-mudo);font-size:var(--fs-sm)}
+.mudo{color:var(--cinza);font-size:var(--fs-sm)}
 .forte{font-weight:600}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
@@ -109,11 +109,11 @@ svg{display:inline-block}
 .busca-lateral kbd{font-family:inherit;font-size:9px;color:var(--texto-mudo);background:var(--branco);border:1px solid var(--n-300);border-radius:4px;padding:2px 5px;font-weight:600;white-space:nowrap}
 .sidebar__section{padding:14px 20px 4px;font-size:var(--fs-xs);color:var(--texto-mudo);font-weight:500}
 .nav{padding:0 10px;display:flex;flex-direction:column;gap:2px}
-.nav__item{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:var(--raio-sm);color:var(--cinza);font-weight:500;font-size:13px;text-align:left;width:100%;position:relative;transition:background .15s,color .15s}
+.nav__item{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:var(--raio-sm);color:var(--preto);font-weight:500;font-size:13px;text-align:left;width:100%;position:relative;transition:background .15s,color .15s}
 .nav__item svg{width:17px;height:17px;flex:0 0 17px;stroke-width:1.7}
 .nav__item:hover{background:var(--n-100);color:var(--preto)}
-.nav__item.is-active{background:var(--amarelo-suave);color:var(--preto);font-weight:600}
-.nav__item.is-active::before{content:"";position:absolute;left:-10px;top:7px;bottom:7px;width:3px;background:var(--amarelo-linha);border-radius:0 3px 3px 0}
+.nav__item.is-active{background:var(--amarelo-suave);color:var(--preto);font-weight:700}
+.nav__item.is-active::before{content:"";position:absolute;left:-10px;top:6px;bottom:6px;width:4px;background:var(--serie-atual);border-radius:0 3px 3px 0}
 .nav__badge{margin-left:auto;font-size:10.5px;font-weight:600;color:var(--cinza);background:var(--n-100);padding:1px 7px;border-radius:20px;font-variant-numeric:tabular-nums}
 .nav__item.is-active .nav__badge{background:var(--branco)}
 .nav__badge--erro{background:var(--erro-bg);color:var(--erro)}
@@ -135,7 +135,7 @@ svg{display:inline-block}
 .topbar{height:var(--topbar-h);flex:0 0 var(--topbar-h);background:var(--branco);border-bottom:1px solid var(--n-200);display:flex;align-items:center;gap:14px;padding:0 24px}
 .topbar .topbar__menu{display:none}
 .topbar h1{font-size:var(--fs-h1);font-weight:700;letter-spacing:-.01em;line-height:1.2}
-.crumb{font-size:var(--fs-sm);color:var(--texto-mudo);font-weight:500;margin-top:1px}
+.crumb{font-size:var(--fs-sm);color:var(--cinza);font-weight:500;margin-top:1px}
 .topbar__spacer{flex:1}
 .topbar__hoje{font-size:var(--fs-sm);color:var(--texto-mudo);white-space:nowrap}
 .icon-btn{width:34px;height:34px;border-radius:var(--raio-sm);display:flex;align-items:center;justify-content:center;color:var(--cinza);position:relative;transition:.15s;flex:0 0 34px}
@@ -155,7 +155,7 @@ svg{display:inline-block}
 @keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
 .page__cabeca{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;flex-wrap:wrap}
 .page__cabeca .acoes-cabeca{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.frase-resumo{font-size:var(--fs-h2);font-weight:500;line-height:1.4;max-width:70ch}
+.frase-resumo{font-size:16px;font-weight:500;line-height:1.4;max-width:70ch}
 .frase-resumo b{font-weight:700}
 .frase-resumo .mudo{font-size:var(--fs-sm)}
 .sessao-banner{display:flex;align-items:center;gap:12px;background:var(--alerta-bg);border:1px solid #EAD3A6;border-radius:var(--raio);padding:11px 14px;margin-bottom:16px;font-size:var(--fs-sm)}
@@ -166,10 +166,10 @@ svg{display:inline-block}
 .filtros{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
 .filtros__label{font-size:var(--fs-xs);color:var(--texto-mudo);font-weight:500;margin-right:2px}
 .seg{display:flex;background:var(--n-200);border-radius:var(--raio-sm);padding:3px;gap:2px;flex-wrap:wrap}
-.seg button{padding:6px 11px;border-radius:5px;font-size:12px;font-weight:600;color:var(--cinza);transition:.15s;white-space:nowrap}
+.seg button{padding:6px 11px;border-radius:5px;font-size:12px;font-weight:600;color:var(--preto);transition:.15s;white-space:nowrap}
 .seg button:hover{color:var(--preto)}
-.seg button.is-on{background:var(--branco);color:var(--preto);box-shadow:var(--sombra-sm)}
-.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:20px;border:1px solid var(--n-300);font-size:12px;font-weight:600;color:var(--cinza);background:var(--branco);transition:.15s;white-space:nowrap}
+.seg button.is-on{background:var(--preto);color:var(--branco)}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:20px;border:1px solid var(--n-300);font-size:12px;font-weight:600;color:var(--preto);background:var(--branco);transition:.15s;white-space:nowrap}
 .pill:hover{border-color:var(--n-400);color:var(--preto)}
 .pill .cnt{font-size:10.5px;font-weight:600;background:var(--n-100);padding:1px 6px;border-radius:20px;color:var(--cinza);font-variant-numeric:tabular-nums}
 .pill.is-on{background:var(--preto);border-color:var(--preto);color:var(--branco)}
@@ -200,11 +200,11 @@ svg{display:inline-block}
 .divisor{width:1px;height:22px;background:var(--n-300);margin:0 2px}
 
 /* ================= CARDS / KPI ================= */
-.card{background:var(--branco);border:1px solid var(--n-200);border-radius:var(--raio);box-shadow:var(--sombra-sm);overflow:hidden}
+.card{background:var(--branco);border:1px solid var(--n-300);border-radius:var(--raio);box-shadow:var(--sombra-sm);overflow:hidden}
 .card + .card{margin-top:14px}
 .card__head{display:flex;align-items:center;gap:10px;padding:13px 17px;border-bottom:1px solid var(--n-200);flex-wrap:wrap}
-.card__head h3{font-size:var(--fs-h2);font-weight:600;letter-spacing:-.01em}
-.card__head p{font-size:var(--fs-sm);color:var(--texto-mudo);margin-top:1px}
+.card__head h3{font-size:16px;font-weight:700;letter-spacing:-.01em}
+.card__head p{font-size:var(--fs-sm);color:var(--cinza);margin-top:2px;font-weight:500}
 .card__head .a-dir{margin-left:auto;display:flex;gap:8px;align-items:center}
 .card__body{padding:17px}
 .cols{display:grid;gap:14px}
@@ -227,13 +227,13 @@ svg{display:inline-block}
 /* ================= TABELA ================= */
 .tabela-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:12.5px}
-thead th{position:sticky;top:0;background:var(--branco);text-align:left;font-weight:600;font-size:var(--fs-th);letter-spacing:var(--ls-caps);text-transform:uppercase;color:var(--cinza);padding:10px 13px;border-bottom:2px solid var(--amarelo);white-space:nowrap;z-index:2}
+thead th{position:sticky;top:0;background:var(--branco);text-align:left;font-weight:700;font-size:11px;letter-spacing:var(--ls-caps);text-transform:uppercase;color:var(--preto);padding:11px 13px;border-bottom:2px solid var(--preto);white-space:nowrap;z-index:2}
 thead th.num{text-align:right}
 thead th button{display:inline-flex;align-items:center;gap:4px;color:inherit;font:inherit;letter-spacing:inherit;text-transform:inherit;padding:0}
 thead th button:hover{color:var(--preto)}
 thead th svg{width:11px;height:11px;opacity:.5}
 thead th[aria-sort="ascending"] svg,thead th[aria-sort="descending"] svg{opacity:1;color:var(--preto)}
-tbody td{padding:10px 13px;border-bottom:1px solid var(--n-200);white-space:nowrap;vertical-align:middle;min-height:42px}
+tbody td{padding:10px 13px;border-bottom:1px solid var(--n-200);white-space:nowrap;vertical-align:middle;min-height:42px;font-weight:500}
 tbody td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
 tbody td.quebra{white-space:normal;min-width:220px}
 tbody tr{transition:background .12s}
@@ -252,7 +252,7 @@ thead th.col-fixa{z-index:3}
 tbody tr:hover td.col-fixa{background:var(--n-050)}
 tbody tr[tabindex]:hover td.col-fixa{background:var(--amarelo-suave)}
 tbody tr.sub-loja td.col-fixa,tfoot td.col-fixa{background:var(--n-050)}
-.tag{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
 .tag .bolinha{width:6px;height:6px;border-radius:50%}
 .tag--ok{background:var(--ok-bg);color:var(--ok)} .tag--ok .bolinha{background:var(--ok)}
 .tag--aberto{background:var(--info-bg);color:var(--info)} .tag--aberto .bolinha{background:var(--info)}
@@ -276,11 +276,11 @@ tbody tr.sub-loja td.col-fixa,tfoot td.col-fixa{background:var(--n-050)}
 .progresso{display:inline-flex;align-items:center;gap:7px}
 .progresso i{display:block;width:56px;height:6px;background:var(--n-200);border-radius:20px;overflow:hidden}
 .progresso i b{display:block;height:100%;background:var(--preto);border-radius:20px}
-.loja-chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;color:var(--cinza)}
+.loja-chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;color:var(--preto)}
 .loja-chip::before{content:"";width:7px;height:7px;border-radius:2px;background:var(--n-400)}
 .loja-chip[data-loja="C012249"]::before{background:var(--preto)}
-.loja-chip[data-loja="C012388"]::before{background:var(--amarelo-linha)}
-.loja-chip[data-loja="C012501"]::before{background:var(--n-400)}
+.loja-chip[data-loja="C012388"]::before{background:var(--serie-atual)}
+.loja-chip[data-loja="C012501"]::before{background:var(--n-500)}
 
 /* ================= LISTAS / BARRAS / TIMELINE / AGING ================= */
 .barras{display:flex;flex-direction:column;gap:12px}
@@ -294,10 +294,10 @@ tbody tr.sub-loja td.col-fixa,tfoot td.col-fixa{background:var(--n-050)}
 .lista__item:last-child{border-bottom:none}
 button.lista__item:hover{background:var(--n-050)}
 .lista__ord{width:22px;height:22px;flex:0 0 22px;border-radius:6px;background:var(--n-100);color:var(--cinza);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700}
-.lista__item:first-child .lista__ord{background:var(--amarelo);color:var(--preto)}
+.lista__item:first-child .lista__ord{background:var(--serie-atual);color:var(--preto)}
 .lista__txt{min-width:0;flex:1}
 .lista__t{display:block;font-size:12.5px;font-weight:600;line-height:1.3}
-.lista__s{display:block;font-size:var(--fs-xs);color:var(--texto-mudo);margin-top:2px}
+.lista__s{display:block;font-size:var(--fs-xs);color:var(--cinza);margin-top:2px;font-weight:500}
 .lista__v{font-size:12.5px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
 .steps{display:grid;grid-template-columns:repeat(var(--passos,4),1fr);min-width:260px}
 .step{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative}
@@ -312,19 +312,19 @@ button.lista__item:hover{background:var(--n-050)}
 .step.done .step__rot{color:var(--cinza)}
 .step.now .step__rot{color:var(--preto);font-weight:600}
 .aging{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}
-.aging__c{border:1px solid var(--n-200);border-radius:var(--raio-sm);padding:11px 12px;text-align:center;transition:.15s;cursor:pointer;background:var(--branco)}
+.aging__c{border:1px solid var(--n-300);border-radius:var(--raio-sm);padding:11px 12px;text-align:center;transition:.15s;cursor:pointer;background:var(--branco)}
 .aging__c:hover{border-color:var(--n-400);box-shadow:var(--sombra-sm)}
 .aging__c.is-on{border-color:var(--preto);box-shadow:0 0 0 1px var(--preto)}
-.aging__t{font-size:var(--fs-xs);font-weight:500;color:var(--texto-mudo)}
+.aging__t{font-size:var(--fs-xs);font-weight:600;color:var(--cinza)}
 .aging__v{font-size:16px;font-weight:700;margin:4px 0 2px;font-variant-numeric:tabular-nums}
 .aging__q{font-size:10.5px;color:var(--texto-mudo)}
 .aging__c[data-sev="1"] .aging__v{color:var(--alerta)}
 .aging__c[data-sev="2"] .aging__v{color:var(--erro)}
 .legenda{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--n-200)}
-.legenda span{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-xs);color:var(--texto-mudo);font-weight:500}
+.legenda span{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-xs);color:var(--cinza);font-weight:600}
 .legenda i{width:10px;height:10px;border-radius:3px;display:block}
 .def{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px 20px}
-.def dt{font-size:var(--fs-xs);color:var(--texto-mudo);font-weight:500}
+.def dt{font-size:var(--fs-xs);color:var(--cinza);font-weight:600}
 .def dd{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
 .def dd small{font-size:var(--fs-xs);color:var(--texto-mudo);font-weight:500}
 
@@ -450,61 +450,72 @@ button.lista__item:hover{background:var(--n-050)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
 /* ===== dash ===== */
-.dash-filtros{margin-bottom:10px}
+.dash-topo{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.dash-topo__rot{font-size:var(--fs-sm);font-weight:600;color:var(--cinza);margin-right:4px}
+.pill--lg{padding:8px 16px;font-size:13px}
+.dash-periodo{display:inline-flex;align-items:center;gap:8px;padding:8px 12px 8px 14px;border-radius:20px;border:1px solid var(--n-300);background:var(--branco);font-size:13px;font-weight:600;color:var(--cinza);transition:.15s}
+.dash-periodo:hover{border-color:var(--preto);color:var(--preto)}
+.dash-periodo.is-on{background:var(--preto);border-color:var(--preto);color:var(--branco)}
+.dash-periodo svg{width:14px;height:14px}
 .dash-custom{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--branco);border:1px solid var(--n-200);border-radius:var(--raio);padding:10px 14px;margin-bottom:12px;font-size:var(--fs-sm)}
 .dash-custom label{display:inline-flex;align-items:center;gap:8px;font-weight:500}
 .dash-custom input[type="month"]{border:1px solid var(--n-300);border-radius:var(--raio-sm);padding:6px 9px;font-size:12.5px;font-weight:500;background:var(--branco)}
-.dash-custom input:focus{outline:none;border-color:var(--amarelo-linha);box-shadow:0 0 0 3px var(--amarelo-suave)}
-.dash-zona{font-size:var(--fs-xs);color:var(--texto-mudo);font-weight:500;margin:6px 0 8px 2px}
-.dash-comparativo{display:grid;grid-template-columns:340px minmax(0,1fr);margin-bottom:14px}
+.dash-custom input:focus{outline:none;border-color:var(--preto)}
+.dash-comparativo{margin-bottom:14px}
+.dash-comparativo .card__head h3{font-size:17px;font-weight:700}
+.dash-comparativo__miolo{display:grid;grid-template-columns:340px minmax(0,1fr)}
 .dash-placar{padding:24px 26px;border-right:1px solid var(--n-200);display:flex;flex-direction:column;justify-content:center;gap:14px}
-.dash-placar__rot{font-size:var(--fs-sm);color:var(--texto-mudo);font-weight:500}
+.dash-placar__rot{font-size:var(--fs-sm);color:var(--cinza);font-weight:600}
 .dash-placar__num{font-variant-numeric:tabular-nums;font-weight:700;letter-spacing:-.02em;line-height:1.1}
-.dash-placar__num--atual{font-size:var(--fs-display);letter-spacing:-.03em;line-height:1.05;display:inline-block;padding-bottom:6px;border-bottom:3px solid var(--amarelo);white-space:nowrap}
+.dash-placar__num--atual{font-size:var(--fs-display);letter-spacing:-.03em;line-height:1.05;display:inline-block;padding-bottom:6px;border-bottom:4px solid var(--serie-atual);white-space:nowrap}
 .dash-placar__num--anterior{font-size:var(--fs-xl);color:var(--cinza)}
-.dash-placar__delta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:var(--fs-sm);color:var(--cinza)}
-.dash-placar__delta .tend{font-size:12.5px;padding:3px 9px}
-.dash-placar__frase{font-size:var(--fs-sm);color:var(--preto);font-weight:500;line-height:1.45}
-.dash-placar__extra{font-size:var(--fs-xs);color:var(--texto-mudo);padding-top:12px;border-top:1px solid var(--n-200)}
+.dash-placar__delta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:var(--fs-sm);color:var(--preto);font-weight:500}
+.dash-placar__delta .tend{font-size:13px;padding:4px 10px}
+.dash-placar__frase{font-size:13px;color:var(--preto);font-weight:600;line-height:1.45}
+.dash-placar__extra{font-size:var(--fs-sm);color:var(--cinza);padding-top:12px;border-top:1px solid var(--n-200)}
 .dash-placar .vazio{padding:12px 0;align-items:flex-start;text-align:left}
 .dash-grafico{padding:18px 20px 12px;min-width:0}
-.dash-grafico__pe{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.dash-grafico__pe .legenda{margin-top:6px;padding-top:0;border-top:none;flex:1}
-.dash-grafico__pe .link{font-size:var(--fs-xs);font-weight:500;color:var(--texto-mudo)}
-.dash-grade{margin-top:12px;overflow-x:auto;border-top:1px solid var(--n-200);padding-top:10px}
-.dash-grade table{font-size:11.5px}
-.dash-grade thead th{padding:6px 8px;text-align:right;position:static;border-bottom:1px solid var(--n-200)}
+.dash-grafico .legenda{margin-top:6px;padding-top:0;border-top:none}
+.dash-grade{overflow-x:auto;border-top:1px solid var(--n-200);padding:12px 20px 14px}
+.dash-grade table{font-size:12px}
+.dash-grade thead th{padding:6px 8px;text-align:right;position:static;border-bottom:1px solid var(--n-300)}
 .dash-grade thead th:first-child{text-align:left}
-.dash-grade td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--n-200);white-space:nowrap}
-.dash-grade td:first-child{text-align:left;font-weight:600;color:var(--cinza)}
+.dash-grade td{padding:7px 8px;text-align:right;border-bottom:1px solid var(--n-200);white-space:nowrap;font-weight:500}
+.dash-grade td:first-child{text-align:left;font-weight:600;color:var(--preto)}
 .dash-grade tr:last-child td{border-bottom:none}
-.dash-grade .tend{padding:1px 5px;font-size:10.5px}
-.dash-grade .sw{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:-1px}
-.dash-linha3{display:grid;grid-template-columns:5fr 4fr 3.2fr;gap:14px}
-.dash-linha3 .card{margin-top:0}
+.dash-grade .tend{padding:1px 6px;font-size:11px}
+.dash-grade .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.dash-linha2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:14px;margin-bottom:14px}
+.dash-linha2 .card{margin-top:0}
 .dash-loja{display:flex;flex-direction:column;gap:14px}
-.dash-loja__linha{display:grid;grid-template-columns:110px 1fr auto;gap:12px;align-items:center;width:100%;text-align:left;padding:4px 0;border-radius:6px}
-button.dash-loja__linha:hover{background:var(--n-050)}
-.dash-loja__nome{font-size:12.5px;font-weight:600}
-.dash-loja__nome small{display:block;font-size:10.5px;color:var(--texto-mudo);font-weight:500}
+.dash-loja__linha{display:grid;grid-template-columns:120px 1fr auto;gap:12px;align-items:center;width:100%;text-align:left;padding:6px 8px;margin:0 -8px;border-radius:6px}
+button.dash-loja__linha:hover{background:var(--n-100)}
+.dash-loja__nome{font-size:13px;font-weight:700}
+.dash-loja__nome small{display:block;font-size:11px;color:var(--cinza);font-weight:500}
 .dash-loja__barras{display:flex;flex-direction:column;gap:4px}
-.dash-loja__barras i{display:block;height:9px;border-radius:20px;background:var(--amarelo);transition:width .45s ease}
-.dash-loja__barras i.ant{height:4px;background:var(--preto);opacity:.85}
-.dash-loja__vals{text-align:right;font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;white-space:nowrap}
-.dash-loja__vals small{display:block;font-weight:500;color:var(--texto-mudo);font-size:10.5px}
-.dash-loja__so{font-size:var(--fs-sm);color:var(--cinza);line-height:1.6}
-.dash-hoje__item{display:flex;align-items:center;gap:12px;padding:13px 17px;border-bottom:1px solid var(--n-200);width:100%;text-align:left}
+.dash-loja__barras i{display:block;height:10px;border-radius:20px;background:var(--serie-atual);transition:width .45s ease}
+.dash-loja__barras i.ant{height:5px;background:var(--preto)}
+.dash-loja__vals{text-align:right;font-variant-numeric:tabular-nums;font-size:13px;font-weight:700;white-space:nowrap}
+.dash-loja__vals small{display:block;font-weight:500;color:var(--cinza);font-size:11px}
+.dash-loja__so{font-size:13px;color:var(--preto);line-height:1.6}
+.dash-hoje__item{display:flex;align-items:center;gap:14px;padding:16px 17px;border-bottom:1px solid var(--n-200);width:100%;text-align:left}
 .dash-hoje__item:last-child{border-bottom:none}
-.dash-hoje__item:hover{background:var(--n-050)}
-.dash-hoje__item svg{width:18px;height:18px;stroke-width:1.7;color:var(--cinza);flex:0 0 18px}
+.dash-hoje__item:hover{background:var(--n-100)}
+.dash-hoje__item > svg{width:20px;height:20px;stroke-width:1.8;color:var(--preto);flex:0 0 20px}
 .dash-hoje__txt{flex:1;min-width:0}
-.dash-hoje__n{display:block;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.dash-hoje__n{display:block;font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 .dash-hoje__n.is-erro{color:var(--erro)}
-.dash-hoje__s{display:block;font-size:var(--fs-xs);color:var(--texto-mudo);margin-top:1px}
+.dash-hoje__s{display:block;font-size:12.5px;color:var(--cinza);margin-top:2px;font-weight:500}
+.dash-top{display:grid;grid-template-columns:repeat(3,1fr)}
+.dash-top .lista__item{border-bottom:none;border-right:1px solid var(--n-200);padding:14px 17px}
+.dash-top .lista__item:last-child{border-right:none}
+.dash-top .lista__ord{width:24px;height:24px;font-size:11px}
 @media(max-width:1200px){
-  .dash-comparativo{grid-template-columns:1fr}
+  .dash-comparativo__miolo{grid-template-columns:1fr}
   .dash-placar{border-right:none;border-bottom:1px solid var(--n-200);flex-direction:row;align-items:center;gap:28px;flex-wrap:wrap}
-  .dash-linha3{grid-template-columns:1fr}
+  .dash-linha2{grid-template-columns:1fr}
+  .dash-top{grid-template-columns:1fr}
+  .dash-top .lista__item{border-right:none;border-bottom:1px solid var(--n-200)}
 }
 @media(max-width:600px){.dash-placar__num--atual{font-size:32px}.dash-placar{flex-direction:column;align-items:flex-start;gap:12px}}
 
@@ -562,7 +573,7 @@ tr.hist-ficha td{padding:0 13px 18px;background:var(--n-050);white-space:normal}
 .hist-ficha__miolo table{font-size:12px}
 .hist-ficha__miolo thead th{position:static;padding:7px 10px}
 .hist-ficha__miolo tbody td{padding:8px 10px}
-.hist-mark{background:var(--amarelo-suave);border-radius:2px}
+.hist-mark{background:#FFE7B8;border-radius:2px}
 .hist-ult small{font-weight:500;color:var(--texto-mudo);font-size:10.5px}
 
 /* ===== financeiro ===== */
@@ -604,7 +615,7 @@ tr.hist-ficha td{padding:0 13px 18px;background:var(--n-050);white-space:normal}
 .com-fundo{background:var(--n-100);padding:28px 20px}
 .com-email{max-width:var(--email-w);margin:0 auto;background:var(--branco);border:1px solid var(--n-200);padding:32px 36px 28px;font-size:14px;line-height:1.55}
 .com-email img{height:36px;width:auto;display:block}
-.com-email .fio{height:3px;background:var(--amarelo);width:56px;margin:18px 0 22px}
+.com-email .fio{height:3px;background:var(--serie-atual);width:56px;margin:18px 0 22px}
 .com-email h2{font-size:20px;font-weight:600;letter-spacing:-.01em;line-height:1.3;margin-bottom:12px}
 .com-email p{margin-bottom:12px}
 .com-email table{width:100%;border-collapse:collapse;margin:16px 0 18px;font-size:13px}
@@ -740,23 +751,13 @@ tr.hist-ficha td{padding:0 13px 18px;background:var(--n-050);white-space:normal}
 
 <!-- ===== dash ===== -->
 <section class="page" id="page-dash">
-  <div class="filtros dash-filtros">
-    <span class="filtros__label">Período</span>
-    <div class="seg" id="dashSeg" role="tablist">
-      <button data-periodo="esteMes">Este mês</button>
-      <button data-periodo="mesPassado">Mês passado</button>
-      <button data-periodo="m3">3 meses</button>
-      <button data-periodo="m6">6 meses</button>
-      <button data-periodo="m12">12 meses</button>
-      <button data-periodo="esteAno">Este ano</button>
-      <button data-periodo="anoPassado">Ano passado</button>
-      <button data-periodo="personalizado">Personalizado</button>
-    </div>
+  <div class="dash-topo">
+    <span class="dash-topo__rot">Comparar</span>
+    <button class="pill pill--lg" data-periodo="y2025">2025</button>
+    <button class="pill pill--lg" data-periodo="y2026">2026</button>
+    <button class="pill pill--lg" data-periodo="y2025x2026">2025 × 2026</button>
     <span class="divisor"></span>
-    <span class="filtros__label">Atalhos</span>
-    <button class="pill" data-periodo="y2025">2025</button>
-    <button class="pill" data-periodo="y2026">2026</button>
-    <button class="pill" data-periodo="y2025x2026">2025 × 2026</button>
+    <button class="dash-periodo" id="dashPeriodoBtn" aria-haspopup="listbox"><span id="dashPeriodoRot">Outro período</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 9 6 6 6-6"/></svg></button>
   </div>
   <div class="dash-custom" id="dashCustom" hidden>
     <label>De <input type="month" id="dashIni" min="2024-01" max="2026-09" value="2026-03"></label>
@@ -766,32 +767,35 @@ tr.hist-ficha td{padding:0 13px 18px;background:var(--n-050);white-space:normal}
     <span class="mudo">Comparamos com o mesmo número de meses logo antes do início.</span>
   </div>
 
-  <p class="dash-zona" id="dashZonaPeriodo"></p>
   <div class="card dash-comparativo">
-    <div class="dash-placar" id="dashPlacar"></div>
-    <div class="dash-grafico">
-      <div id="dashGrafico"></div>
-      <div class="dash-grafico__pe">
-        <div class="legenda" id="dashLegenda"></div>
-        <button class="link" id="dashVerNumeros">Ver números</button>
-      </div>
-      <div class="dash-grade" id="dashGrade" hidden></div>
+    <div class="card__head">
+      <div><h3>Quanto você comprou</h3><p id="dashSub"></p></div>
+      <div class="a-dir"><button class="link" id="dashVerNumeros">Ver números</button></div>
     </div>
+    <div class="dash-comparativo__miolo">
+      <div class="dash-placar" id="dashPlacar"></div>
+      <div class="dash-grafico">
+        <div id="dashGrafico"></div>
+        <div class="legenda" id="dashLegenda"></div>
+      </div>
+    </div>
+    <div class="dash-grade" id="dashGrade" hidden></div>
   </div>
 
-  <div class="dash-linha3">
+  <div class="dash-linha2">
+    <div class="card dash-hoje">
+      <div class="card__head"><div><h3>Precisa da sua atenção</h3><p>Hoje, 03/09/2026 · não depende do período</p></div></div>
+      <div id="dashHoje"></div>
+    </div>
     <div class="card">
       <div class="card__head"><div><h3>Por loja</h3><p id="dashPorLojaSub"></p></div></div>
       <div class="card__body" id="dashPorLoja"></div>
     </div>
-    <div class="card">
-      <div class="card__head"><div><h3>Itens que mais comprou</h3><p id="dashTopSub"></p></div></div>
-      <div class="lista" id="dashTop"></div>
-    </div>
-    <div class="card dash-hoje">
-      <div class="card__head"><div><h3>Hoje</h3><p>03/09/2026 · não muda com o período</p></div></div>
-      <div id="dashHoje"></div>
-    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__head"><div><h3>Itens que mais comprou</h3><p id="dashTopSub"></p></div><div class="a-dir"><button class="link" data-goto="itens">Ver todos os itens</button></div></div>
+    <div class="dash-top" id="dashTop"></div>
   </div>
   <div id="dashNota"></div>
 </section>
@@ -1357,7 +1361,7 @@ $('#btnSessao').onclick = sair;
     const x = i*gw+4, bw=(gw-10)/2;
     const h25 = vals25[i]/max*(h-8), h26 = vals26[i]/max*(h-8);
     s += `<rect x="${x}" y="${h-h25}" width="${bw}" height="${h25}" rx="2" fill="#ffffff" opacity=".85"/>`;
-    s += i<8 ? `<rect x="${x+bw+2}" y="${h-h26}" width="${bw}" height="${h26}" rx="2" fill="#FCC972"/>`
+    s += i<8 ? `<rect x="${x+bw+2}" y="${h-h26}" width="${bw}" height="${h26}" rx="2" fill="#F5B53F"/>`
              : `<rect x="${x+bw+2}" y="${h-h25*0.9}" width="${bw}" height="${h25*0.9}" rx="2" fill="none" stroke="rgba(255,255,255,.35)" stroke-dasharray="3 3"/>`;
   }
   $('#loginPoster').innerHTML = s + '</svg>';
@@ -1581,15 +1585,15 @@ function svgColunasPares({pares, w=800, h=260, onClickAttr='data-mes', fmt=brl})
   const topo = Math.ceil(max/passo)*passo;
   const y = v => padT + (h-padT-padB)*(1-v/topo);
   let s = `<svg class="grafico" viewBox="0 0 ${w} ${h}" role="img" aria-label="Comparativo mensal">`;
-  for(let v=0; v<=topo+0.001; v+=passo){ s += `<line x1="${padL}" x2="${w-padR}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grade)" stroke-width="1"/><text x="${padL-8}" y="${y(v)+4}" text-anchor="end" font-size="10" fill="#6F6F6B">${v>=1000?num(v/1000,0)+' mil':num(v)}</text>`; }
+  for(let v=0; v<=topo+0.001; v+=passo){ s += `<line x1="${padL}" x2="${w-padR}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grade)" stroke-width="1"/><text x="${padL-8}" y="${y(v)+4}" text-anchor="end" font-size="10.5" font-weight="500" fill="#585857">${v>=1000?num(v/1000,0)+' mil':num(v)}</text>`; }
   pares.forEach((p,i)=>{
     const x0 = padL + i*gw + gw*0.14, bw = gw*0.32, gap = gw*0.06;
     const hA = p.ant ? y(0)-y(p.ant) : 0, hB = p.atu ? y(0)-y(p.atu) : 0;
     if(p.ant!=null) s += `<rect class="col" x="${x0}" y="${y(p.ant||0)}" width="${bw}" height="${hA}" rx="3" fill="var(--serie-anterior)" tabindex="0" role="button" ${onClickAttr}="${p.antKey||''}" aria-label="${esc(p.antRot||'')}: ${fmt(p.ant||0)}"><title>${esc(p.antRot||'')} · ${fmt(p.ant||0)}</title></rect>`;
     if(p.futuro) s += `<rect x="${x0+bw+gap}" y="${y(p.ant*0.9||0)}" width="${bw}" height="${(y(0)-y(p.ant*0.9||0))}" rx="3" fill="none" stroke="var(--serie-futuro)" stroke-dasharray="3 3"/>`;
     else s += `<rect class="col" x="${x0+bw+gap}" y="${y(p.atu||0)}" width="${bw}" height="${hB}" rx="3" fill="var(--serie-atual)" tabindex="0" role="button" ${onClickAttr}="${p.atuKey||''}" aria-label="${esc(p.atuRot||'')}: ${fmt(p.atu||0)}"><title>${esc(p.atuRot||'')} · ${fmt(p.atu||0)}</title></rect>`;
-    s += `<text x="${padL + i*gw + gw/2}" y="${h-padB+16}" text-anchor="middle" font-size="10.5" font-weight="600" fill="#585857">${esc(p.rot)}</text>`;
-    if(p.sub) s += `<text x="${padL + i*gw + gw/2}" y="${h-padB+28}" text-anchor="middle" font-size="9.5" fill="#6F6F6B">${esc(p.sub)}</text>`;
+    s += `<text x="${padL + i*gw + gw/2}" y="${h-padB+16}" text-anchor="middle" font-size="11" font-weight="700" fill="#1D1D1B">${esc(p.rot)}</text>`;
+    if(p.sub) s += `<text x="${padL + i*gw + gw/2}" y="${h-padB+28}" text-anchor="middle" font-size="9.5" font-weight="500" fill="#585857">${esc(p.sub)}</text>`;
   });
   return s + '</svg>';
 }
@@ -1709,8 +1713,11 @@ function dashRender(){
   const nomeAtu = ehAno ? String(rotAnoAtu) : per.rotAtual, nomeAnt = ehAno ? String(rotAnoAnt) : per.rotAnterior;
 
   $$('#page-dash [data-periodo]').forEach(b=>b.classList.toggle('is-on', b.dataset.periodo===DASH.periodo));
+  const ehAtalho = ['y2025','y2026','y2025x2026'].includes(DASH.periodo);
+  $('#dashPeriodoBtn').classList.toggle('is-on', !ehAtalho);
+  $('#dashPeriodoRot').textContent = ehAtalho ? 'Outro período' : PERIODOS[DASH.periodo].rot;
   $('#dashCustom').hidden = DASH.periodo!=='personalizado';
-  $('#dashZonaPeriodo').textContent = `No período · ${ehAno && DASH.periodo==='y2025x2026' ? 'jan–ago 2026 comparado com jan–ago 2025' : `${per.rotAtual} comparado com ${per.rotAnterior}`}${loja==='todas' ? ' · 3 lojas somadas' : ' · só '+nomeLoja(loja)}`;
+  $('#dashSub').textContent = `${ehAno && DASH.periodo==='y2025x2026' ? 'jan–ago 2026 comparado com jan–ago 2025' : `${per.rotAtual} comparado com ${per.rotAnterior}`}${loja==='todas' ? ' · 3 lojas somadas' : ' · só '+nomeLoja(loja)}`;
 
   /* meses acima do anterior (par a par) */
   const pares = per.atual.map((m,i)=>({atu:totalMes(m.a,m.m,loja), ant:per.anterior[i] ? totalMes(per.anterior[i].a, per.anterior[i].m, loja) : 0}));
@@ -1742,7 +1749,7 @@ function dashRender(){
       antRot:a?`${MESES[a.m-1]}/${a.a}`:'', atuRot:`${MESES[m.m-1]}/${m.a}`, antKey:a&&a.a>=2025?`${a.a}-${a.m}`:'', atuKey:`${m.a}-${m.m}`}; });
   }
   $('#dashGrafico').innerHTML = svgColunasPares({pares:paresG, w:820, h:ehAno?270:250});
-  $('#dashLegenda').innerHTML = `<span><i style="background:var(--serie-anterior)"></i>${esc(nomeAnt)}</span><span><i style="background:var(--serie-atual)"></i>${esc(nomeAtu)}</span>${paresG.some(p=>p.futuro)?'<span><i style="border:1px dashed var(--n-400);background:none"></i>ainda sem compras</span>':''}<span class="mudo">Clique em uma coluna para ver as notas do mês.</span>`;
+  $('#dashLegenda').innerHTML = `<span><i style="background:var(--serie-anterior)"></i>${esc(nomeAnt)}</span><span><i style="background:var(--serie-atual)"></i>${esc(nomeAtu)}</span>${paresG.some(p=>p.futuro)?'<span><i style="border:1px dashed var(--n-400);background:none"></i>ainda sem compras</span>':''}<span>Clique numa coluna para abrir as notas do mês</span>`;
   $('#dashVerNumeros').textContent = DASH.verNumeros ? 'Esconder números' : 'Ver números';
   $('#dashGrade').hidden = !DASH.verNumeros;
   $('#dashGrade').innerHTML = `<table><thead><tr><th></th>${paresG.map(p=>`<th>${esc(p.rot)}</th>`).join('')}<th>Total</th></tr></thead><tbody>
@@ -1766,8 +1773,8 @@ function dashRender(){
   }
 
   /* top itens */
-  const top = dashTopItens(per.atual, loja).slice(0,5);
-  $('#dashTopSub').textContent = `Por valor comprado em ${nomeAtu}`;
+  const top = dashTopItens(per.atual, loja).slice(0,3);
+  $('#dashTopSub').textContent = `Por valor comprado em ${nomeAtu}. Clique para ver o histórico de preço.`;
   $('#dashTop').innerHTML = top.length ? top.map((t,i)=>{ const it=itemPorLm(t.lm); return `<button class="lista__item" data-goto="itens" data-params='{"busca":"${t.lm}"}'><span class="lista__ord">${i+1}</span><span class="lista__txt"><span class="lista__t">${t.lm} · ${esc(it.desc)}</span><span class="lista__s">${num(t.qtd)} ${it.un}</span></span><span class="lista__v">${brl(t.valor)}</span></button>`; }).join('')
     : `<div class="vazio vazio--compacto">${IC.caixa}<b>Sem compras no período</b><span>Escolha outro período para ver os itens.</span></div>`;
 
@@ -1788,6 +1795,12 @@ function dashRender(){
 REG.dash = {titulo:'Visão geral', render(params){ if(params && params.periodo){ DASH.periodo = params.periodo; } dashRender(); }};
 
 $$('#page-dash [data-periodo]').forEach(b=>b.addEventListener('click', ()=>{ DASH.periodo = b.dataset.periodo; dashRender(); if(DASH.periodo==='personalizado') setTimeout(()=>$('#dashIni').focus(),30); }));
+$('#dashPeriodoBtn').onclick = e=>{
+  e.stopPropagation();
+  const chaves = ['esteMes','mesPassado','m3','m6','m12','esteAno','anoPassado','personalizado'];
+  abrirPopLista($('#dashPeriodoBtn'), {busca:false, ativo:DASH.periodo, itens:chaves.map(k=>{ const p=calcPeriodo(k, DASH.custom); return {valor:k, rotulo:PERIODOS[k].rot, sub:k==='personalizado' ? 'escolha os meses' : `${p.rotAtual} × ${p.rotAnterior}`}; }),
+    onPick:v=>{ if(!v) return; DASH.periodo=v; dashRender(); if(v==='personalizado') setTimeout(()=>$('#dashIni').focus(),30); }});
+};
 $('#dashAplicar').onclick = ()=>{
   const [ai,mi] = $('#dashIni').value.split('-').map(Number), [af,mf] = $('#dashFim').value.split('-').map(Number);
   if(!ai||!af){ $('#dashCustomErro').textContent='Escolha os dois meses.'; return; }
