@@ -2192,10 +2192,10 @@ function abrirDrawerBoleto(nf, parcela, opts={}){
       <div class="drawer__sec"><h4>Linha digitável</h4>
         <div class="bol-linha"><code>${b.linhaDigitavel}</code><button class="btn btn--sm" data-copiar="${b.linhaDigitavel.replace(/[ .]/g,'')}" data-copiar-msg="Linha digitável copiada.">${IC.copiar}Copiar</button></div>
         <div class="bol-barras">${svgITF(b.codigoBarras)}<small>${b.codigoBarras.replace(/(\d{4})(?=\d)/g,'$1 ')}</small></div>
-        <p class="mudo" style="margin-top:8px">Códigos gerados para demonstração. No portal real, vêm do boleto registrado no banco.</p>
+        ${b.real ? '' : '<p class="mudo" style="margin-top:8px">Códigos gerados para demonstração. No portal real, vêm do boleto registrado no banco.</p>'}
       </div>
       <div class="drawer__sec"><h4>Pix</h4>
-        ${t.temPix ? `<div class="bol-pix">${svgQR(b.pix)}<div><p class="mudo">Aponte a câmera do app do banco ou use o código abaixo. O Pix quita o boleto com o mesmo valor atualizado.</p><code>${b.pix}</code><button class="btn btn--sm" data-copiar="${b.pix}" data-copiar-msg="Código Pix copiado.">${IC.copiar}Copiar código Pix</button></div></div>`
+        ${t.temPix ? `<div class="bol-pix">${svgQR(b.pix)}<div><p class="mudo">Copie o código Pix abaixo e cole no app do banco. O Pix quita o boleto com o mesmo valor atualizado.</p><code>${b.pix}</code><button class="btn btn--sm" data-copiar="${b.pix}" data-copiar-msg="Código Pix copiado.">${IC.copiar}Copiar código Pix</button></div></div>`
                  : `<div class="bol-aviso">${IC.info}<span>Este boleto ainda não tem Pix. Pague pela linha digitável ou pelo código de barras.</span></div>`}
       </div>
       <div class="bol-acoes">
