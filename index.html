@@ -84,6 +84,7 @@ svg{display:inline-block}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:8px 14px;border-radius:var(--raio-sm);font-size:12.5px;font-weight:600;border:1px solid var(--n-300);background:var(--branco);color:var(--preto);transition:.15s;white-space:nowrap}
 .btn:hover{border-color:var(--preto);background:var(--n-050)}
 .btn svg{width:15px;height:15px;stroke-width:1.8}
+a.btn,a.acao{text-decoration:none}
 .btn--primary{background:var(--preto);border-color:var(--preto);color:var(--branco)}
 .btn--primary:hover{background:#000;border-color:#000}
 .btn--acento{background:var(--amarelo);border-color:var(--amarelo);color:var(--preto)}
@@ -856,7 +857,7 @@ tr.hist-ficha td{padding:0 13px 18px;background:var(--n-050);white-space:normal}
   <div class="page__cabeca">
     <p class="frase-resumo" id="nfResumo"></p>
     <div class="acoes-cabeca">
-      <button class="btn btn--sm" data-toast="XMLs do período compactados em um .zip e baixados.">XMLs do período</button>
+      <button class="btn btn--sm" id="nfLote">XMLs do período</button>
       <button class="btn btn--sm" data-toast="Lista de notas exportada (Excel).">Exportar</button>
     </div>
   </div>
@@ -1565,6 +1566,12 @@ const IC = {
   envelope:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
   caminhao:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg>',
 };
+/* download de documento da nota: link real quando há API (versão com servidor), senão botão de demonstração */
+function btnDoc(n, tipo, classe, rotulo, icone){
+  const api = window.PORTAL_API;
+  if(api && n.docEntry) return `<a class="${classe}" href="${api}/nf/${n.docEntry}/${tipo}" download title="${rotulo}" aria-label="${rotulo} da nota ${n.num}">${icone}${rotulo.includes('Baixar')?rotulo:''}</a>`;
+  return `<button class="${classe}" data-toast="${tipo==='xml'?'XML':'DANFE'} da NF ${n.num} ${tipo==='xml'?'baixado':'baixada (PDF)'}." title="${rotulo}" aria-label="${rotulo} da nota ${n.num}">${icone}${rotulo.includes('Baixar')?rotulo:''}</button>`;
+}
 const tend = (v, opts={}) => { const cls = v>0.05?'tend--up':v<-0.05?'tend--down':'tend--zero'; const ic = v>0.05?IC.up:v<-0.05?IC.down:''; return `<span class="tend ${cls}">${ic}${pct(v)}</span>`; };
 const vazio = (titulo, texto, acao='') => `<div class="vazio"><img class="vazio__simbolo" src="data:image/png;base64,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" alt=""><b>${titulo}</b><span>${texto}</span>${acao}</div>`;
 const notaSPS = txt => `<div class="nota-obs">${IC.info}<p><b>Para a SPS:</b> ${txt}</p></div>`;
@@ -1701,8 +1708,8 @@ function abrirDrawerNota(num, opts={}){
     </dl>
     <div class="drawer__sec"><h4>Documentos</h4>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn--sm" data-toast="DANFE da NF ${n.num} baixada (PDF).">${IC.pdf}Baixar DANFE</button>
-        <button class="btn btn--sm" data-toast="XML da NF ${n.num} baixado.">${IC.xml}Baixar XML</button>
+        ${btnDoc(n,'danfe','btn btn--sm','Baixar DANFE',IC.pdf)}
+        ${btnDoc(n,'xml','btn btn--sm','Baixar XML',IC.xml)}
         <button class="btn btn--sm btn--ghost" data-copiar="${n.chave}" data-copiar-msg="Chave de acesso copiada.">${IC.copiar}Copiar chave de acesso</button>
       </div>
       <p class="mudo" style="margin-top:8px;word-break:break-all">Chave ${n.chave.replace(/(\d{4})(?=\d)/g,'$1 ')}</p>
@@ -2031,6 +2038,7 @@ function nfRender(){
   const cons = consolidado();
   if(!l.length){ $('#nfTabela').innerHTML = vazio('Nenhuma nota fiscal aqui', base.length ? 'Tente outro filtro ou outra busca.' : 'Nenhuma nota fiscal neste período. Assim que um pedido for faturado, a nota aparece aqui com XML e DANFE.'); $('#nfFoot').innerHTML=''; return; }
   l = ordenar(l, NF.ord, {num:n=>+n.num, data:n=>dnum(n.data), total:n=>n.total});
+  nfListaAtual = l;
   const total = l.length, paginas = Math.max(1, Math.ceil(total/NF_POR_PAG)); NF.pagina = Math.min(NF.pagina, paginas);
   const pagina = (cons && NF.agrupar) ? l : l.slice((NF.pagina-1)*NF_POR_PAG, NF.pagina*NF_POR_PAG);
   const linha = n => `<tr tabindex="0" role="button" data-nota="${n.num}" aria-label="Nota fiscal ${n.num}" class="${nfSituacao(n)==='vencida'?'is-atrasada':''}">
@@ -2039,7 +2047,7 @@ function nfRender(){
       <td><span class="nf-emp">${esc(EMPRESAS_EMISSORAS[n.emissora].curto)}</span></td>
       <td class="num">${n.itens.length}</td><td class="num">${brl(n.produtos)}</td><td class="num">${brl(n.impostos)}</td><td class="num destaque">${brl(n.total)}</td>
       <td>${NF_TAG[nfSituacao(n)]}</td>
-      <td><span class="acoes nf-acoes"><button class="acao acao--xml" data-toast="XML da NF ${n.num} baixado." title="Baixar XML" aria-label="Baixar XML da nota ${n.num}">${IC.xml}</button><button class="acao acao--pdf" data-toast="DANFE da NF ${n.num} baixada (PDF)." title="Baixar DANFE" aria-label="Baixar DANFE da nota ${n.num}">${IC.pdf}</button></span></td></tr>`;
+      <td><span class="acoes nf-acoes">${btnDoc(n,'xml','acao acao--xml','XML',IC.xml)}${btnDoc(n,'danfe','acao acao--pdf','DANFE',IC.pdf)}</span></td></tr>`;
   const sub = (lj,g)=>`<tr class="sub-loja"><td class="col-fixa">Subtotal ${esc(lj.nome)}</td><td>${g.length} notas</td><td></td><td></td><td></td><td class="num">${g.reduce((s,n)=>s+n.itens.length,0)}</td><td class="num">${brl(g.reduce((s,n)=>s+n.produtos,0))}</td><td class="num">${brl(g.reduce((s,n)=>s+n.impostos,0))}</td><td class="num">${brl(g.reduce((s,n)=>s+n.total,0))}</td><td></td><td></td></tr>`;
   const corpo = (cons && NF.agrupar) ? comSubtotais([...pagina].sort((a,b)=>LOJAS.findIndex(x=>x.cod===a.loja)-LOJAS.findIndex(x=>x.cod===b.loja)), 'loja', linha, sub) : pagina.map(linha).join('');
   $('#nfTabela').innerHTML = `<table><thead><tr>${thSort('NF','num',NF.ord,'col-fixa')}${thSort('Emissão','data',NF.ord)}${cons?'<th>Loja</th>':''}<th>Pedido</th><th>Emitida por</th><th class="num">Itens</th><th class="num">Produtos</th><th class="num">Impostos</th>${thSort('Total','total',NF.ord,'num')}<th>Pagamento</th><th>XML · DANFE</th></tr></thead>
@@ -2051,6 +2059,20 @@ function nfRender(){
   ligarSort($('#page-notas'), NF.ord, nfRender);
   $('#nfNota').innerHTML = notaSPS('no portal real esta tela se chama "Relatório de Notas Fiscais de Saída"; para o cliente é <b>nota fiscal de compra</b>. Colunas de desconto, despesas e condição saem da primeira dobra e ficam no painel da nota. "Pagamento" vem dos títulos da nota (OINV › JDT/OCRD) e leva ao boleto. "XMLs do período" = download em lote.');
 }
+let nfListaAtual = [];
+$('#nfLote').onclick = async ()=>{
+  if(!window.PORTAL_API){ toast('XMLs do período compactados em um .zip e baixados.'); return; }
+  const ids = nfListaAtual.map(n=>n.docEntry).filter(Boolean);
+  if(!ids.length){ toast('Nenhuma nota na lista atual.'); return; }
+  if(ids.length>500){ toast('Muitas notas de uma vez: filtre um período menor (máx. 500).'); return; }
+  toast(`Montando o .zip com ${ids.length} XMLs… pode levar um minuto.`);
+  try{
+    const r = await fetch(window.PORTAL_API + '/nf/lote', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({docEntries:ids, nome:`xmls-${(CLIENTE.nome||'cliente').slice(0,30)}-${NF.mes?MESES[NF.mes.m-1]+NF.mes.a:NF.periodo}`})});
+    if(!r.ok){ const e = await r.json().catch(()=>({})); toast(e.erro || 'Não consegui gerar o .zip.'); return; }
+    const blob = await r.blob(); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = (r.headers.get('Content-Disposition')||'').match(/filename="([^"]+)"/)?.[1] || 'xmls.zip'; document.body.appendChild(a); a.click(); a.remove();
+    toast(`${ids.length} XMLs baixados.`);
+  }catch(e){ toast('Não consegui falar com o servidor do portal.'); }
+};
 REG.notas = {titulo:'Notas fiscais de compra', render(params){
   if(params && params.mes){ NF.mes = params.mes; NF.pag='todas'; NF.pagina=1; }
   if(params && params.abrir){ NF.periodo='todas'; NF.mes=null; NF.pag='todas'; NF.busca=''; $('#nfBusca').value=''; }
@@ -2062,7 +2084,7 @@ $('#nfPills').addEventListener('click', e=>{ const b=e.target.closest('[data-pag
 $('#nfBusca').oninput = e=>{ NF.busca=e.target.value; NF.pagina=1; nfRender(); };
 $('#nfLimpar').onclick = ()=>{ NF.busca=''; $('#nfBusca').value=''; nfRender(); };
 $('#nfEmissora').onclick = e=>{ e.stopPropagation(); abrirPopLista($('#nfEmissora'), {busca:false, ativo:NF.emissora, itens:[{valor:'todas', rotulo:'Todas as empresas'}, ...Object.values(EMPRESAS_EMISSORAS).map(x=>({valor:x.sigla, rotulo:x.nome, sub:x.cnpj}))], onPick:v=>{ if(v){ NF.emissora=v; NF.pagina=1; nfRender(); } }}); };
-$('#nfTabela').addEventListener('click', e=>{ if(e.target.closest('button')) return; const tr=e.target.closest('tr[data-nota]'); if(tr) abrirDrawerNota(tr.dataset.nota); });
+$('#nfTabela').addEventListener('click', e=>{ if(e.target.closest('button, a')) return; const tr=e.target.closest('tr[data-nota]'); if(tr) abrirDrawerNota(tr.dataset.nota); });
 $('#nfTabela').addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && e.target.matches('tr[data-nota]')){ e.preventDefault(); abrirDrawerNota(e.target.dataset.nota); } });
 
 /* ===== itens ===== */
@@ -2204,7 +2226,7 @@ function finRender(){
       <td>${tagTitulo(t)}${s==='pago'&&t.dataPagamento?`<br><span class="fin-pago">em ${t.dataPagamento}</span>`:''}</td>
       <td class="num">${brl(t.valor)}</td>
       <td class="num"><span class="fin-atual">${brl(va)}${va>t.valor?`<small>+ ${brl(va-t.valor)} de multa e juros</small>`:''}</span></td>
-      <td><button class="acao acao--txt" data-drawer-boleto="${t.nf}|${t.parcela}">${s==='pago' ? 'Ver detalhes' : t.forma==='Boleto' ? 'Ver boleto' : 'Transferência'}</button></td></tr>`; };
+      <td><button class="acao acao--txt" data-drawer-boleto="${t.nf}|${t.parcela}">${s==='pago' ? 'Ver detalhes' : t.forma==='Boleto' ? (t.boleto ? 'Ver boleto' : 'Detalhes') : 'Transferência'}</button></td></tr>`; };
   const sub = (lj,g)=>`<tr class="sub-loja"><td class="col-fixa">Subtotal ${esc(lj.nome)}</td><td>${g.length} boletos</td><td></td><td></td><td></td><td class="num">${brl(g.reduce((s,t)=>s+t.valor,0))}</td><td class="num">${brl(g.reduce((s,t)=>s+valorAtualizado(t),0))}</td><td></td></tr>`;
   const corpo = (cons && FIN.agrupar) ? comSubtotais([...pagina].sort((a,b)=>LOJAS.findIndex(x=>x.cod===a.loja)-LOJAS.findIndex(x=>x.cod===b.loja)), 'loja', linha, sub) : pagina.map(linha).join('');
   $('#finTabela').innerHTML = `<table><thead><tr>${thSort('Nota · parcela','nf',FIN.ord,'col-fixa')}${cons?'<th>Loja</th>':''}<th>Pedido</th><th>Emitida por</th>${thSort('Vencimento','venc',FIN.ord)}<th>Situação</th>${thSort('Original','valor',FIN.ord,'num')}${thSort('Atualizado','atual',FIN.ord,'num')}<th>Boleto</th></tr></thead>
@@ -2258,7 +2280,13 @@ function abrirDrawerBoleto(nf, parcela, opts={}){
       <div><dt>Parcela</dt><dd>${t.parcela} de ${t.deParcelas}</dd></div>
     </dl>`;
   let corpo = '';
-  if(t.forma==='Boleto'){
+  if(t.forma==='Boleto' && !t.boleto){
+    corpo = `
+      <div class="drawer__sec"><h4>2ª via do boleto</h4>
+        <div class="bol-aviso">${IC.info}<span>A 2ª via ainda não está integrada ao portal: o boleto é emitido pelo banco, fora do SAP. Enquanto isso, peça ao financeiro da Luminatti.</span></div>
+      </div>
+      <div class="bol-acoes">${s==='pago' ? '<span class="mudo">Título quitado.</span>' : `<button class="btn btn--primary" data-toast="Pedido de 2ª via da NF ${t.nf} enviado ao financeiro da Luminatti.">${IC.envelope}Pedir 2ª via ao financeiro</button><span class="mudo">Vencimento ${t.venc} · ${brl(va)}${s==='vencido'?' já com multa e juros estimados':''}.</span>`}</div>`;
+  } else if(t.forma==='Boleto'){
     const b = t.boleto;
     corpo = `
       <div class="drawer__sec"><h4>Linha digitável</h4>
