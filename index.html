@@ -1957,7 +1957,10 @@ $('#pedTabela').addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' 
 const NF = {periodo:'esteAno', pag:'todas', busca:'', emissora:'todas', mes:null, ord:{c:'data',asc:false}, pagina:1, agrupar:false};
 const NF_POR_PAG = 25;
 
-function nfSituacao(n){ const t = TITULOS.filter(x=>x.nf===n.num); if(t.some(x=>situacaoTitulo(x)==='vencido')) return 'vencida'; if(t.some(x=>situacaoTitulo(x)==='aberto')) return 'aberta'; return 'paga'; }
+/* índice nf → títulos, refeito só quando a lista de títulos muda (clientes grandes têm milhares) */
+let _nfTitSrc = null, _nfTitIdx = null;
+function titulosDaNota(num){ if(_nfTitSrc!==TITULOS){ _nfTitSrc = TITULOS; _nfTitIdx = new Map(); TITULOS.forEach(t=>{ if(!_nfTitIdx.has(t.nf)) _nfTitIdx.set(t.nf, []); _nfTitIdx.get(t.nf).push(t); }); } return _nfTitIdx.get(num) || []; }
+function nfSituacao(n){ const t = titulosDaNota(n.num); if(t.some(x=>situacaoTitulo(x)==='vencido')) return 'vencida'; if(t.some(x=>situacaoTitulo(x)==='aberto')) return 'aberta'; return 'paga'; }
 const NF_TAG = {vencida:'<span class="tag tag--erro"><i class="bolinha"></i>Vencida</span>', aberta:'<span class="tag tag--aberto"><i class="bolinha"></i>Em aberto</span>', paga:'<span class="tag tag--ok"><i class="bolinha"></i>Paga</span>'};
 function nfDentroPeriodo(n){
   if(NF.mes) return n.a===NF.mes.a && n.m===NF.mes.m;
@@ -2021,11 +2024,18 @@ const HIST = {busca:'', periodo:'tudo', ord:{c:'total',asc:false}, abertos:new S
 
 function histDentroPeriodo(n){ switch(HIST.periodo){ case 'esteAno': return n.a===HOJE.a; case 'm12': return mesIdx(n.a,n.m) > mesIdx(HOJE.a,HOJE.m)-13; default: return true; } }
 /* compras do item no período (uma linha por nota) */
-function comprasDoItem(lm){
-  const out = [];
-  filtrarPorLoja(NOTAS).filter(histDentroPeriodo).forEach(n=>n.itens.filter(i=>i.lm===lm).forEach(i=>out.push({nota:n, qtd:i.qtd, preco:i.preco, total:i.total})));
-  return out.sort((a,b)=>dnum(a.nota.data).localeCompare(dnum(b.nota.data)));
+/* mapa lm → compras, montado uma vez por (lista de notas, período, loja) — evita varrer milhares de notas por item */
+let _histCache = {chave:null, mapa:null};
+function histMapa(){
+  const chave = `${lojaAtual()}|${HIST.periodo}|${NOTAS.length}`;
+  if(_histCache.chave===chave && _histCache.src===NOTAS) return _histCache.mapa;
+  const mapa = new Map();
+  filtrarPorLoja(NOTAS).filter(histDentroPeriodo).forEach(n=>n.itens.forEach(i=>{ if(!mapa.has(i.lm)) mapa.set(i.lm, []); mapa.get(i.lm).push({nota:n, qtd:i.qtd, preco:i.preco, total:i.total}); }));
+  mapa.forEach(l=>l.sort((a,b)=>dnum(a.nota.data).localeCompare(dnum(b.nota.data))));
+  _histCache = {chave, src:NOTAS, mapa};
+  return mapa;
 }
+function comprasDoItem(lm){ return histMapa().get(lm) || []; }
 function fichaItem(lm){
   const c = comprasDoItem(lm); if(!c.length) return null;
   const qtd = c.reduce((s,x)=>s+x.qtd,0), total = c.reduce((s,x)=>s+x.total,0);
