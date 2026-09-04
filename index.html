@@ -363,6 +363,13 @@ button.lista__item:hover{background:var(--n-050)}
 .pop__op .s{display:block;font-size:var(--fs-xs);color:var(--texto-mudo)}
 .pop__op .v{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
 .pop__nada{padding:22px 16px;text-align:center;font-size:12px;color:var(--texto-mudo);line-height:1.5}
+.pop__op--check{cursor:pointer;padding:8px 10px}
+.pop__op--check input{accent-color:var(--preto);width:15px;height:15px;flex:0 0 15px;margin:0}
+.pop__op--check .pop__so{font-size:var(--fs-xs);font-weight:500;color:var(--texto-mudo);opacity:0;white-space:nowrap}
+.pop__op--check:hover .pop__so,.pop__op--check .pop__so:focus-visible{opacity:1}
+#popLojas{width:360px}
+#popLojas .pop__lista{max-height:380px}
+#popLojas .pop__pe .mudo{margin-right:auto;font-weight:500}
 .pop__pe{display:flex;gap:8px;justify-content:flex-end;padding:9px 11px;border-top:1px solid var(--n-200);background:var(--n-050)}
 .pop__head{display:flex;align-items:center;gap:8px;padding:11px 14px 9px;font-size:var(--fs-sm);font-weight:600;border-bottom:1px solid var(--n-200)}
 .pop__head .link{margin-left:auto;font-size:var(--fs-xs);font-weight:500;color:var(--texto-mudo)}
@@ -573,6 +580,8 @@ tr.hist-ficha td{padding:0 13px 18px;background:var(--n-050);white-space:normal}
 .hist-ficha__miolo table{font-size:12px}
 .hist-ficha__miolo thead th{position:static;padding:7px 10px}
 .hist-ficha__miolo tbody td{padding:8px 10px}
+.hist-lojas{margin-bottom:6px}
+.hist-lojas .tend{padding:1px 6px;font-size:10.5px}
 .hist-mark{background:#FFE7B8;border-radius:2px}
 .hist-ult small{font-weight:500;color:var(--texto-mudo);font-size:10.5px}
 
@@ -940,6 +949,12 @@ tr.hist-ficha td{padding:0 13px 18px;background:var(--n-050);white-space:normal}
   <div class="pop__lista" id="popItens"></div>
   <div class="pop__pe"><button class="btn btn--ghost btn--sm" id="popLimpar" hidden>Remover seleção</button><button class="btn btn--sm" id="popFechar">Fechar</button></div>
 </div>
+<!-- popover de lojas (múltipla escolha) -->
+<div class="pop pop--lista" id="popLojas" role="dialog" aria-label="Escolher lojas">
+  <div class="pop__busca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="popLojasBusca" placeholder="Procurar loja, cidade ou código" aria-label="Procurar loja"></div>
+  <div class="pop__lista" id="popLojasItens"></div>
+  <div class="pop__pe"><span class="mudo" id="popLojasInfo"></span><button class="btn btn--ghost btn--sm" id="popLojasTodas">Todas</button><button class="btn btn--sm btn--primary" id="popLojasAplicar">Aplicar</button></div>
+</div>
 <!-- popover de notificações -->
 <div class="pop pop--notif" id="popNotif">
   <div class="pop__head">Notificações<button class="link" id="notifLerTodas">Marcar todas como lidas</button></div>
@@ -1256,7 +1271,7 @@ const NOTIFICACOES = [
 
 /* ---- totais mensais: SOMA das notas (2025–2026) ou tabela (2024) ---- */
 function totalMes(a, m, loja){
-  const lojas = loja && loja!=='todas' ? [loja] : LOJAS.map(l=>l.cod);
+  const lojas = !loja || loja==='todas' ? LOJAS.map(l=>l.cod) : loja==='sel' ? EST.sel : [loja];
   if(a===2024) return COMPRAS_2024.filter(c=>c.m===m && lojas.includes(c.loja)).reduce((s,c)=>s+c.valor,0);
   return Math.round(NOTAS.filter(n=>n.a===a && n.m===m && lojas.includes(n.loja)).reduce((s,n)=>s+n.total,0)*100)/100;
 }
@@ -1266,20 +1281,20 @@ function totalMes(a, m, loja){
 /* =====================================================================
    ESTADO GLOBAL, LOJA, NAVEGAÇÃO
    ===================================================================== */
-const EST = {loja:'todas', pagina:'dash'};
-try{ const l = localStorage.getItem('pc.loja'); if(l && (l==='todas' || lojaPorCod(l))) EST.loja = l; }catch(e){}
+const EST = {loja:'todas', sel:[], pagina:'dash'};   // loja: 'todas' | 'sel' (várias) | código de uma loja
+try{ const l = JSON.parse(localStorage.getItem('pc.loja')||'null'); if(l && typeof l==='object'){ if(l.loja==='todas' || lojaPorCod(l.loja)) EST.loja = l.loja; if(l.loja==='sel' && Array.isArray(l.sel) && l.sel.every(lojaPorCod) && l.sel.length>1){ EST.loja='sel'; EST.sel=l.sel; } } }catch(e){}
 const REG = {}; // REG[pagina] = {titulo, render(params)}
 const lojaAtual = () => EST.loja;
-const filtrarPorLoja = lista => EST.loja==='todas' ? lista : lista.filter(x=>x.loja===EST.loja);
-const consolidado = () => EST.loja==='todas' && LOJAS.length>1;
-const lojasAtivas = () => EST.loja==='todas' ? LOJAS : [lojaPorCod(EST.loja)];
+const lojasAtivas = () => EST.loja==='todas' ? LOJAS : EST.loja==='sel' ? LOJAS.filter(l=>EST.sel.includes(l.cod)) : [lojaPorCod(EST.loja)].filter(Boolean);
+const codigosAtivos = () => new Set(lojasAtivas().map(l=>l.cod));
+const filtrarPorLoja = lista => { if(EST.loja==='todas') return lista; const s = codigosAtivos(); return lista.filter(x=>s.has(x.loja)); };
+const consolidado = () => lojasAtivas().length>1;
 
 function atualizarContexto(){
-  const todas = consolidado();
-  $('#lojaSelNome').textContent = todas ? 'Todas as lojas' : nomeLoja(EST.loja);
-  $('#lojaSelSelo').hidden = !(todas && LOJAS.length>1);
-  $('#lojaSelNome').textContent = todas ? (LOJAS.length>1 ? 'Todas as lojas' : nomeLoja((LOJAS[0]||{}).cod)) : nomeLoja(EST.loja);
-  $('#crumb').textContent = todas ? (LOJAS.length>1 ? `Todas as lojas · ${LOJAS.length} somadas` : `Loja única · ${(LOJAS[0]||{}).cod||''}`) : `Só ${nomeLoja(EST.loja)} · ${EST.loja}`;
+  const n = lojasAtivas().length;
+  $('#lojaSelSelo').hidden = !(n>1);
+  $('#lojaSelNome').textContent = EST.loja==='todas' ? (LOJAS.length>1 ? 'Todas as lojas' : nomeLoja((LOJAS[0]||{}).cod)) : EST.loja==='sel' ? `${n} de ${LOJAS.length} lojas` : nomeLoja(EST.loja);
+  $('#crumb').textContent = EST.loja==='todas' ? (LOJAS.length>1 ? `Todas as lojas · ${LOJAS.length} somadas` : `Loja única · ${(LOJAS[0]||{}).cod||''}`) : EST.loja==='sel' ? `${n} lojas escolhidas · somadas` : `Só ${nomeLoja(EST.loja)} · ${EST.loja}`;
 }
 function atualizarBadges(){
   const pend = linhasPendentes(filtrarPorLoja(PEDIDOS)).length;
@@ -1289,12 +1304,17 @@ function atualizarBadges(){
   set('#badgeSaldo', pend); set('#badgeFin', venc); set('#badgeCom', nao);
   $('#sinoDot').classList.toggle('is-on', nao>0);
 }
-function setLoja(cod){
-  EST.loja = cod;
-  try{ localStorage.setItem('pc.loja', cod); }catch(e){}
+function setLoja(cod){ setLojas(cod==='todas' ? LOJAS.map(l=>l.cod) : [cod]); }
+function setLojas(codigos){
+  const cods = [...new Set(codigos)].filter(lojaPorCod);
+  if(!cods.length || cods.length===LOJAS.length){ EST.loja='todas'; EST.sel=[]; }
+  else if(cods.length===1){ EST.loja=cods[0]; EST.sel=[]; }
+  else { EST.loja='sel'; EST.sel=cods; }
+  try{ localStorage.setItem('pc.loja', JSON.stringify({loja:EST.loja, sel:EST.sel})); }catch(e){}
   atualizarContexto(); atualizarBadges();
   if(REG[EST.pagina]) REG[EST.pagina].render({});
-  toast(cod==='todas' ? (LOJAS.length>1 ? `Mostrando as ${LOJAS.length} lojas somadas` : 'Mostrando a loja') : `Mostrando só ${nomeLoja(cod)}`);
+  const n = lojasAtivas().length;
+  toast(EST.loja==='todas' ? (LOJAS.length>1 ? `Mostrando as ${LOJAS.length} lojas somadas` : 'Mostrando a loja') : EST.loja==='sel' ? `Mostrando ${n} lojas somadas` : `Mostrando só ${nomeLoja(EST.loja)}`);
 }
 function irPara(p, params={}){
   if(!REG[p]) return;
@@ -1397,22 +1417,49 @@ $('#popItens').addEventListener('click', e=>{ const b=e.target.closest('[data-k]
 $('#popLimpar').onclick = ()=>{ const cb=popCtx&&popCtx.onPick; fecharPopLista(); if(cb) cb(null); };
 $('#popFechar').onclick = ()=>fecharPopLista();
 function fecharPopLista(){ $('#popLista').classList.remove('is-on'); popCtx=null; }
-function fecharPops(){ fecharPopLista(); $('#popNotif').classList.remove('is-on'); $('#popBusca').classList.remove('is-on'); }
+function fecharPops(){ fecharPopLista(); $('#popNotif').classList.remove('is-on'); $('#popBusca').classList.remove('is-on'); $('#popLojas').classList.remove('is-on'); }
 document.addEventListener('click', e=>{
   if(popCtx && !e.target.closest('#popLista') && !e.target.closest('[data-pop-anchor]') && e.target!==popCtx.anchor && !popCtx.anchor.contains(e.target)) fecharPopLista();
   if(!e.target.closest('#popNotif') && !e.target.closest('#btnSino')) $('#popNotif').classList.remove('is-on');
+  if(!e.target.closest('#popLojas') && !e.target.closest('#lojaSel')) $('#popLojas').classList.remove('is-on');
   if(!e.target.closest('#popBusca') && !e.target.closest('.busca-lateral')) $('#popBusca').classList.remove('is-on');
 });
 document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ fecharPops(); if($('#drawer').classList.contains('is-open')) fecharDrawer(); } });
 
-/* seletor de loja (global) */
-$('#lojaSel').onclick = e=>{
-  e.stopPropagation();
-  if(popCtx && popCtx.anchor===$('#lojaSel')){ fecharPopLista(); return; }
-  abrirPopLista($('#lojaSel'), {busca:false, ativo:EST.loja,
-    itens:[{valor:'todas', rotulo:'Todas as lojas', sub:`${LOJAS.length} lojas · consolidado`}, ...LOJAS.map(l=>({valor:l.cod, rotulo:l.nome, sub:`${l.cidadeUF} · ${l.cod}`}))],
-    onPick:v=>{ if(v && v!==EST.loja) setLoja(v); }});
-};
+/* seletor de lojas (global): marque várias, todas ou só uma */
+let lojasTmp = new Set();
+function abrirPopLojas(){
+  const pop = $('#popLojas'), r = $('#lojaSel').getBoundingClientRect();
+  fecharPops();
+  lojasTmp = new Set(lojasAtivas().map(l=>l.cod));
+  pop.style.top = Math.min(r.bottom+6, window.innerHeight-420)+'px';
+  pop.style.left = Math.max(8, Math.min(r.right-360, window.innerWidth-370))+'px';
+  $('#popLojasBusca').value = '';
+  desenharPopLojas();
+  pop.classList.add('is-on');
+  setTimeout(()=>$('#popLojasBusca').focus(), 30);
+}
+function desenharPopLojas(){
+  const q = semAcento($('#popLojasBusca').value);
+  const lista = LOJAS.filter(l=>!q || semAcento(l.nome+' '+l.cidadeUF+' '+l.cod+' '+(l.razao||'')).includes(q));
+  const todas = lojasTmp.size===LOJAS.length;
+  $('#popLojasItens').innerHTML = (q ? '' : `<label class="pop__op pop__op--check"><input type="checkbox" data-todas ${todas?'checked':''}><span class="txt"><span class="t">Todas as lojas</span><span class="s">${LOJAS.length} lojas · consolidado</span></span></label>`)
+    + (lista.length ? lista.map(l=>`<label class="pop__op pop__op--check"><input type="checkbox" data-cod="${l.cod}" ${lojasTmp.has(l.cod)?'checked':''}><span class="txt"><span class="t">${esc(l.nome)}</span><span class="s">${esc(l.cidadeUF)} · ${l.cod}</span></span><button type="button" class="link pop__so" data-so="${l.cod}">só esta</button></label>`).join('')
+       : '<div class="pop__nada">Nenhuma loja com esse nome.</div>');
+  $('#popLojasInfo').textContent = todas ? 'Todas as lojas' : `${lojasTmp.size} de ${LOJAS.length} ${lojasTmp.size===1?'loja':'lojas'}`;
+  $('#popLojasAplicar').disabled = lojasTmp.size===0;
+}
+$('#lojaSel').onclick = e=>{ e.stopPropagation(); if($('#popLojas').classList.contains('is-on')) $('#popLojas').classList.remove('is-on'); else abrirPopLojas(); };
+$('#popLojasBusca').oninput = desenharPopLojas;
+$('#popLojasItens').addEventListener('change', e=>{
+  const i = e.target; if(i.tagName!=='INPUT') return;
+  if(i.hasAttribute('data-todas')){ lojasTmp = new Set(i.checked ? LOJAS.map(l=>l.cod) : []); }
+  else { if(i.checked) lojasTmp.add(i.dataset.cod); else lojasTmp.delete(i.dataset.cod); }
+  desenharPopLojas();
+});
+$('#popLojasItens').addEventListener('click', e=>{ const b = e.target.closest('[data-so]'); if(!b) return; e.preventDefault(); e.stopPropagation(); $('#popLojas').classList.remove('is-on'); setLojas([b.dataset.so]); });
+$('#popLojasTodas').onclick = ()=>{ $('#popLojas').classList.remove('is-on'); setLoja('todas'); };
+$('#popLojasAplicar').onclick = ()=>{ $('#popLojas').classList.remove('is-on'); setLojas([...lojasTmp]); };
 
 /* =====================================================================
    NOTIFICAÇÕES (sino)
@@ -1705,7 +1752,7 @@ document.addEventListener('click', e=>{
 const DASH = {periodo:'y2025x2026', custom:{ini:{a:2026,m:3},fim:{a:2026,m:8}}, verNumeros:false};
 
 function dashTopItens(meses, loja){
-  const lojas = loja==='todas' ? LOJAS.map(l=>l.cod) : [loja];
+  const lojas = lojasAtivas().map(l=>l.cod);
   const chaves = new Set(meses.map(x=>`${x.a}-${x.m}`));
   const acc = {};
   NOTAS.forEach(n=>{ if(!lojas.includes(n.loja) || !chaves.has(`${n.a}-${n.m}`)) return; n.itens.forEach(i=>{ acc[i.lm] = acc[i.lm]||{lm:i.lm, valor:0, qtd:0}; acc[i.lm].valor += i.total; acc[i.lm].qtd += i.qtd; }); });
@@ -1726,7 +1773,7 @@ function dashRender(){
   $('#dashPeriodoBtn').classList.toggle('is-on', !ehAtalho);
   $('#dashPeriodoRot').textContent = ehAtalho ? 'Outro período' : PERIODOS[DASH.periodo].rot;
   $('#dashCustom').hidden = DASH.periodo!=='personalizado';
-  $('#dashSub').textContent = `${per.rotAtual} comparado com ${per.rotAnterior}${loja==='todas' ? (LOJAS.length>1 ? ` · ${LOJAS.length} lojas somadas` : '') : ' · só '+nomeLoja(loja)}`;
+  $('#dashSub').textContent = `${per.rotAtual} comparado com ${per.rotAnterior}${consolidado() ? ` · ${lojasAtivas().length} lojas somadas` : (loja==='todas' ? '' : ' · só '+nomeLoja(loja))}`;
   const faixa = ' · ' + per.rotAtual.replace(/ \d{4}$/,'');
 
   /* meses acima do anterior (par a par) */
@@ -1768,15 +1815,15 @@ function dashRender(){
     <tr><td>Variação</td>${paresG.map(p=>`<td>${p.atu==null||!p.ant?'—':tend((p.atu-p.ant)/p.ant*100)}</td>`).join('')}<td>${totAnt?tend(delta):'—'}</td></tr></tbody></table>`;
 
   /* por loja */
-  if(loja==='todas' && LOJAS.length>1){
-    const linhas = LOJAS.map(l=>({l, atu:somaMeses(per.atual,l.cod), ant:somaMeses(per.anterior,l.cod)}));
+  if(consolidado()){
+    const linhas = lojasAtivas().map(l=>({l, atu:somaMeses(per.atual,l.cod), ant:somaMeses(per.anterior,l.cod)})).sort((a,b)=>b.atu-a.atu);
     const max = Math.max(1,...linhas.flatMap(x=>[x.atu,x.ant]));
-    $('#dashPorLojaSub').textContent = `${esc(nomeAtu)} × ${esc(nomeAnt)} · clique para ver só uma loja`;
+    $('#dashPorLojaSub').textContent = `${esc(nomeAtu)} × ${esc(nomeAnt)} · da maior para a menor · clique para ver só uma loja`;
     $('#dashPorLoja').innerHTML = `<div class="dash-loja">${linhas.map(x=>`<button class="dash-loja__linha" data-loja-sel="${x.l.cod}">
         <span class="dash-loja__nome">${esc(x.l.nome)}<small>${esc(x.l.cidadeUF)}</small></span>
         <span class="dash-loja__barras"><i style="width:${x.atu/max*100}%"></i><i class="ant" style="width:${x.ant/max*100}%"></i></span>
         <span class="dash-loja__vals">${brlCurto(x.atu)}<small>${x.ant?brlCurto(x.ant):'—'}</small>${x.ant?' '+tend((x.atu-x.ant)/x.ant*100):''}</span></button>`).join('')}</div>
-      <div class="legenda"><span><i style="background:var(--serie-atual)"></i>${esc(nomeAtu)}</span><span><i style="background:var(--serie-anterior)"></i>${esc(nomeAnt)}</span><span class="mudo">Soma das ${LOJAS.length} lojas = ${brl(totAtu)}</span></div>`;
+      <div class="legenda"><span><i style="background:var(--serie-atual)"></i>${esc(nomeAtu)}</span><span><i style="background:var(--serie-anterior)"></i>${esc(nomeAnt)}</span><span class="mudo">Soma das ${lojasAtivas().length} lojas = ${brl(totAtu)}</span>${EST.loja==='sel' ? ` <button class="link" data-loja-sel="todas" style="font-size:11px">Ver todas as ${LOJAS.length}</button>` : ''}</div>`;
   } else {
     $('#dashPorLojaSub').textContent = LOJAS.length>1 ? 'Você está vendo uma loja' : 'Este cliente tem uma única loja';
     $('#dashPorLoja').innerHTML = LOJAS.length>1 ? `<p class="dash-loja__so">Estes números são só de <b>${esc(nomeLoja(loja))}</b> (${loja}).<br><button class="link" data-loja-sel="todas">Ver as ${LOJAS.length} lojas somadas</button></p>` : `<p class="dash-loja__so"><b>${esc(nomeLoja((LOJAS[0]||{}).cod))}</b> · ${(LOJAS[0]||{}).cod||''}<br><span class="mudo">Quando o cliente tiver mais lojas, elas aparecem aqui somadas e separadas.</span></p>`;
@@ -1854,7 +1901,7 @@ function saldoRender(){
 
   const total = todasLinhas.reduce((s,l)=>s+l.valor,0), nPed = new Set(todasLinhas.map(l=>l.pedido.num)).size;
   $('#saldoResumo').innerHTML = todasLinhas.length
-    ? `Você ainda tem <b>${todasLinhas.length} ${todasLinhas.length===1?'item':'itens'}</b> de <b>${nPed} ${nPed===1?'pedido':'pedidos'}</b> por receber, somando <b>${brl(total)}</b>.${consolidado()?` <span class="mudo">Soma das ${LOJAS.length} lojas.</span>`:''}`
+    ? `Você ainda tem <b>${todasLinhas.length} ${todasLinhas.length===1?'item':'itens'}</b> de <b>${nPed} ${nPed===1?'pedido':'pedidos'}</b> por receber, somando <b>${brl(total)}</b>.${consolidado()?` <span class="mudo">Soma das ${lojasAtivas().length} lojas.</span>`:''}`
     : `Nada pendente${consolidado()?'':' em '+esc(nomeLoja(lojaAtual()))}. Tudo o que você pediu já foi faturado.`;
 
   const cons = consolidado();
@@ -1915,7 +1962,7 @@ function pedRender(){
   const q = semAcento(PED.busca);
   if(q) l = l.filter(p=>p.num.includes(q) || p.itens.some(i=>semAcento(i.lm+' '+itemPorLm(i.lm).desc).includes(q)));
   const emAberto = base.filter(p=>p.status!=='faturado');
-  $('#pedResumo').innerHTML = base.length ? `<b>${base.length} ${base.length===1?'pedido':'pedidos'}</b> ${PED.periodo?`nos últimos ${PED.periodo} meses`:'no total'}${consolidado()?` nas ${LOJAS.length} lojas`:''} · <b>${emAberto.length}</b> ainda ${emAberto.length===1?'aberto':'abertos'}, somando <b>${brl(emAberto.reduce((s,p)=>s+pedidoSaldo(p),0))}</b> a receber.` : 'Nenhum pedido neste período.';
+  $('#pedResumo').innerHTML = base.length ? `<b>${base.length} ${base.length===1?'pedido':'pedidos'}</b> ${PED.periodo?`nos últimos ${PED.periodo} meses`:'no total'}${consolidado()?` nas ${lojasAtivas().length} lojas`:''} · <b>${emAberto.length}</b> ainda ${emAberto.length===1?'aberto':'abertos'}, somando <b>${brl(emAberto.reduce((s,p)=>s+pedidoSaldo(p),0))}</b> a receber.` : 'Nenhum pedido neste período.';
 
   const cons = consolidado();
   if(!l.length){ $('#pedTabela').innerHTML = vazio('Nenhum pedido aqui', base.length ? 'Tente outro filtro ou outra busca.' : 'Nenhum pedido neste período. Quer fazer um agora?', base.length ? '' : '<button class="btn btn--acento btn--sm" data-toast="Novo pedido: o fluxo de digitação continua o do portal atual.">+ Novo pedido</button>'); $('#pedFoot').innerHTML=''; return; }
@@ -1980,7 +2027,7 @@ function nfRender(){
   let l = base.filter(n=>NF.pag==='todas' || nfSituacao(n)===NF.pag);
   const q = NF.busca.trim(); if(q) l = l.filter(n=>n.num.includes(q) || n.pedido.includes(q));
   const rotPer = NF.mes ? `em ${MESES_LONGO[NF.mes.m-1]} de ${NF.mes.a}` : {esteAno:`em ${HOJE.a}`, anoPassado:`em ${HOJE.a-1}`, m12:'nos últimos 12 meses', todas:'em todo o período'}[NF.periodo];
-  $('#nfResumo').innerHTML = base.length ? `<b>${base.length} ${base.length===1?'nota':'notas'}</b> ${rotPer}${consolidado()?` nas ${LOJAS.length} lojas`:''}, somando <b>${brl(base.reduce((s,n)=>s+n.total,0))}</b>.${cont.vencida?` <span class="mudo">${cont.vencida} com boleto vencido.</span>`:''}` : `Nenhuma nota fiscal ${rotPer}.`;
+  $('#nfResumo').innerHTML = base.length ? `<b>${base.length} ${base.length===1?'nota':'notas'}</b> ${rotPer}${consolidado()?` nas ${lojasAtivas().length} lojas`:''}, somando <b>${brl(base.reduce((s,n)=>s+n.total,0))}</b>.${cont.vencida?` <span class="mudo">${cont.vencida} com boleto vencido.</span>`:''}` : `Nenhuma nota fiscal ${rotPer}.`;
   const cons = consolidado();
   if(!l.length){ $('#nfTabela').innerHTML = vazio('Nenhuma nota fiscal aqui', base.length ? 'Tente outro filtro ou outra busca.' : 'Nenhuma nota fiscal neste período. Assim que um pedido for faturado, a nota aparece aqui com XML e DANFE.'); $('#nfFoot').innerHTML=''; return; }
   l = ordenar(l, NF.ord, {num:n=>+n.num, data:n=>dnum(n.data), total:n=>n.total});
@@ -2042,6 +2089,8 @@ function fichaItem(lm){
   const precos = c.map(x=>x.preco);
   return {lm, item:itemPorLm(lm), compras:c, qtd, total, medio:total/qtd, ultimo:c[c.length-1], primeiro:c[0], menor:Math.min(...precos), maior:Math.max(...precos)};
 }
+/* em preço, subir é ruim: inverte as cores do indicador (seta mantém o sentido) */
+const tendPreco = v => { if(Math.abs(v)<0.05) return '<span class="tend tend--zero">0,0%</span>'; const sobe = v>0; return `<span class="tend ${sobe?'tend--down':'tend--up'}">${sobe?IC.up:IC.down}${pct(v)}</span>`; };
 const marcar = (txt, q) => { if(!q) return esc(txt); const i = semAcento(txt).indexOf(q); if(i<0) return esc(txt); return esc(txt.slice(0,i)) + '<mark class="hist-mark">' + esc(txt.slice(i,i+q.length)) + '</mark>' + esc(txt.slice(i+q.length)); };
 
 function histRender(){
@@ -2057,7 +2106,7 @@ function histRender(){
   }
   fichas = ordenar(fichas, HIST.ord, {item:f=>f.lm, qtd:f=>f.qtd, ultimo:f=>f.ultimo.preco, medio:f=>f.medio, total:f=>f.total});
   const qtdT = fichas.reduce((s,f)=>s+f.qtd,0), totT = fichas.reduce((s,f)=>s+f.total,0);
-  $('#histResumo').innerHTML = `${q ? `<b>${fichas.length} ${fichas.length===1?'item':'itens'}</b> com “${esc(HIST.busca.trim())}”` : `<b>${fichas.length} itens</b> comprados`} ${rotPer}${consolidado()?` nas ${LOJAS.length} lojas`:''} · <b>${num(qtdT)}</b> unidades · <b>${brl(totT)}</b> gastos.`;
+  $('#histResumo').innerHTML = `${q ? `<b>${fichas.length} ${fichas.length===1?'item':'itens'}</b> com “${esc(HIST.busca.trim())}”` : `<b>${fichas.length} itens</b> comprados`} ${rotPer}${consolidado()?` nas ${lojasAtivas().length} lojas`:''} · <b>${num(qtdT)}</b> unidades · <b>${brl(totT)}</b> gastos.`;
   const cons = consolidado();
   const linha = f => { const aberta = HIST.abertos.has(f.lm); return `<tr tabindex="0" role="button" aria-expanded="${aberta}" data-item="${f.lm}" class="${aberta?'is-aberta':''}">
       <td class="col-fixa"><span class="hist-item">${marcar(f.lm,q)}<small>${marcar(f.item.desc,q)}</small></span></td>
@@ -2086,14 +2135,26 @@ function fichaHTML(f){
       <div><dt>Preço médio (ponderado)</dt><dd>${brl(f.medio)}</dd></div>
       <div><dt>Menor</dt><dd>${brl(f.menor)}</dd></div>
       <div><dt>Maior</dt><dd>${brl(f.maior)}</dd></div>
-      <div><dt>Do 1º ao último preço</dt><dd>${c.length>1 ? tend(varTotal) : '<small>só uma compra</small>'}</dd></div>
+      <div><dt>Do 1º ao último preço</dt><dd>${c.length>1 ? tendPreco(varTotal) : '<small>só uma compra</small>'}</dd></div>
       <div><dt>Total no período</dt><dd>${brl(f.total)} <small>${num(f.qtd)} ${f.item.un}</small></dd></div>
     </dl>
     ${c.length>1 ? svgLinha({pontos, media:f.medio, w:780, h:170}) : ''}
+    ${cons ? histPorLojaHTML(f) : ''}
     <h4>Compras deste item <span class="mudo">${c.length}</span></h4>
     <table><thead><tr><th>NF</th><th>Data</th>${cons?'<th>Loja</th>':''}<th class="num">Qtd</th><th class="num">Unitário</th><th class="num">Total</th><th class="num">Vs. compra anterior</th></tr></thead>
-    <tbody>${[...c].reverse().map((x,i,arr)=>{ const ant = arr[i+1]; const d = ant ? (x.preco-ant.preco)/ant.preco*100 : null; return `<tr><td><button class="link" data-drawer-nota="${x.nota.num}">${x.nota.num}</button></td><td>${x.nota.data}</td>${cons?`<td>${chipLoja(x.nota.loja)}</td>`:''}<td class="num">${num(x.qtd)}</td><td class="num">${brl(x.preco)}</td><td class="num destaque">${brl(x.total)}</td><td class="num">${d==null?'<span class="mudo">—</span>':tend(d)}</td></tr>`; }).join('')}</tbody></table>
+    <tbody>${[...c].reverse().map((x,i,arr)=>{ const ant = arr[i+1]; const d = ant ? (x.preco-ant.preco)/ant.preco*100 : null; return `<tr><td><button class="link" data-drawer-nota="${x.nota.num}">${x.nota.num}</button></td><td>${x.nota.data}</td>${cons?`<td>${chipLoja(x.nota.loja)}</td>`:''}<td class="num">${num(x.qtd)}</td><td class="num">${brl(x.preco)}</td><td class="num destaque">${brl(x.total)}</td><td class="num">${d==null?'<span class="mudo">—</span>':tendPreco(d)}</td></tr>`; }).join('')}</tbody></table>
   </div>`;
+}
+/* quanto cada loja pagou neste item (preço médio ponderado por loja) */
+function histPorLojaHTML(f){
+  const por = {};
+  f.compras.forEach(x=>{ const k = x.nota.loja; const r = por[k] || (por[k] = {cod:k, qtd:0, total:0, n:0, ultimo:null, menor:Infinity, maior:0}); r.qtd += x.qtd; r.total += x.total; r.n++; r.ultimo = x; r.menor = Math.min(r.menor, x.preco); r.maior = Math.max(r.maior, x.preco); });
+  const linhas = Object.values(por).sort((a,b)=>b.total-a.total);
+  const medioGeral = f.medio;
+  return `<h4>Por loja <span class="mudo">${linhas.length} ${linhas.length===1?'loja comprou':'lojas compraram'} este item</span></h4>
+    <table class="hist-lojas"><thead><tr><th>Loja</th><th class="num">Compras</th><th class="num">Qtd</th><th class="num">Preço médio</th><th class="num">Vs. média geral</th><th class="num">Último preço</th><th class="num">Total</th><th class="num">% do item</th></tr></thead>
+    <tbody>${linhas.map(r=>{ const med = r.total/r.qtd; const d = medioGeral ? (med-medioGeral)/medioGeral*100 : 0; return `<tr><td>${chipLoja(r.cod)}</td><td class="num">${r.n}</td><td class="num">${num(r.qtd)}</td><td class="num destaque">${brl(med)}</td><td class="num">${Math.abs(d)<0.05 ? '<span class="mudo">igual</span>' : tendPreco(d)}</td><td class="num">${brl(r.ultimo.preco)}<br><small class="mudo">${r.ultimo.nota.data}</small></td><td class="num destaque">${brl(r.total)}</td><td class="num">${pct(r.total/f.total*100,false)}</td></tr>`; }).join('')}</tbody></table>
+    <p class="mudo" style="margin-top:6px">Preço médio ponderado pela quantidade em cada loja. Verde = a loja pagou abaixo da média do grupo; vermelho = acima. Nas variações de preço, subir é vermelho.</p>`;
 }
 REG.itens = {titulo:'Itens e preços', render(params){
   if(params && params.busca){ HIST.busca = params.busca; $('#histBusca').value = params.busca; HIST.abertos = new Set([params.busca.toUpperCase()]); }
@@ -2120,7 +2181,7 @@ const FAIXAS = [
 function finRender(){
   const base = filtrarPorLoja(TITULOS);
   const abertos = base.filter(t=>!t.pago), vencidos = base.filter(t=>situacaoTitulo(t)==='vencido');
-  $('#finResumo').innerHTML = abertos.length ? `<b>${brl(abertos.reduce((s,t)=>s+valorAtualizado(t),0))}</b> em aberto em <b>${abertos.length} ${abertos.length===1?'boleto':'boletos'}</b>${consolidado()?` nas ${LOJAS.length} lojas`:''}${vencidos.length ? ` · <b>${brl(vencidos.reduce((s,t)=>s+valorAtualizado(t),0))}</b> já ${vencidos.length===1?'vencido':'vencidos'} <span class="mudo">(valor atualizado)</span>` : ' · nada vencido'}.` : 'Nenhum boleto em aberto. Tudo pago.';
+  $('#finResumo').innerHTML = abertos.length ? `<b>${brl(abertos.reduce((s,t)=>s+valorAtualizado(t),0))}</b> em aberto em <b>${abertos.length} ${abertos.length===1?'boleto':'boletos'}</b>${consolidado()?` nas ${lojasAtivas().length} lojas`:''}${vencidos.length ? ` · <b>${brl(vencidos.reduce((s,t)=>s+valorAtualizado(t),0))}</b> já ${vencidos.length===1?'vencido':'vencidos'} <span class="mudo">(valor atualizado)</span>` : ' · nada vencido'}.` : 'Nenhum boleto em aberto. Tudo pago.';
   $('#finAging').innerHTML = FAIXAS.map(fx=>{ const l = base.filter(fx.f); return `<button class="aging__c ${FIN.faixa===fx.k?'is-on':''}" data-sev="${l.length?fx.sev:0}" data-faixa="${fx.k}" aria-pressed="${FIN.faixa===fx.k}"><div class="aging__t">${fx.rot}</div><div class="aging__v">${brl(l.reduce((s,t)=>s+valorAtualizado(t),0))}</div><div class="aging__q">${l.length} ${l.length===1?'boleto':'boletos'}</div></button>`; }).join('');
   $$('#finSeg button').forEach(b=>b.classList.toggle('is-on', b.dataset.sit===FIN.sit));
   $('#finLimpar').classList.toggle('is-on', !!FIN.busca);
