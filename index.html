@@ -1570,7 +1570,8 @@ const IC = {
 function btnDoc(n, tipo, classe, rotulo, icone){
   const api = window.PORTAL_API;
   if(api && n.docEntry) return `<a class="${classe}" href="${api}/nf/${n.docEntry}/${tipo}" download title="${rotulo}" aria-label="${rotulo} da nota ${n.num}">${icone}${rotulo.includes('Baixar')?rotulo:''}</a>`;
-  return `<button class="${classe}" data-toast="${tipo==='xml'?'XML':'DANFE'} da NF ${n.num} ${tipo==='xml'?'baixado':'baixada (PDF)'}." title="${rotulo}" aria-label="${rotulo} da nota ${n.num}">${icone}${rotulo.includes('Baixar')?rotulo:''}</button>`;
+  const msg = api===null ? 'Para baixar XML e DANFE, abra o portal pelo abrir_portal.bat (ele liga o servidor local).' : `${tipo==='xml'?'XML':'DANFE'} da NF ${n.num} ${tipo==='xml'?'baixado':'baixada (PDF)'}.`;
+  return `<button class="${classe}" data-toast="${msg}" title="${rotulo}" aria-label="${rotulo} da nota ${n.num}">${icone}${rotulo.includes('Baixar')?rotulo:''}</button>`;
 }
 const tend = (v, opts={}) => { const cls = v>0.05?'tend--up':v<-0.05?'tend--down':'tend--zero'; const ic = v>0.05?IC.up:v<-0.05?IC.down:''; return `<span class="tend ${cls}">${ic}${pct(v)}</span>`; };
 const vazio = (titulo, texto, acao='') => `<div class="vazio"><img class="vazio__simbolo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGgAAABoCAYAAAAdHLWhAAAL0ElEQVR4nOUd7ZXbNoy8l/+5TnDuBOdMEGWCqhPEmSDeoM4E9QZ1NnAniDJBlQmqTBDdBOzjHXSlaREEQMiSc3hP77U5i6QAgvgGrXPOXDtYa2+NMWv439Y515ufBG7MlYO1dm+M+WGM+QLPD/9vQLSrB3vNHGStPRhj3if+/NU5VxHG8Jz3SEznXGOWBp5AS3jgiPLc4JHkEb8h/N5lnjrzfhf9vsPemQUvcy8AkLVNILjxuzvxzo5AoB1CnB55r5obJ8Mzuwyy1tbGmD8Tf34LhJDCoDjE4Md8jbznOXkRMDuBgHsw+JgQ+BRNrU38+2+Z9+6XomQsgUCeSySccDDGPGTe87+RwsosAJZAIBG4J1sH474Pzjkv9MfggTB+ivsuC3MLQWPMMSPo+8z7axjDE6OH/0aFPEHBOCDvbuDofFwbcOlqMvxMhPQKFt7As0W0sUqiibnyNQ5Ijp8WWeshtYn8RrkKAsEO4374JqH27qfamcG8TfDsMmvENlI3xRpVPQnW2grcLYZr3YPWVINwfjyqXFqGxO9uIqF+1JYh1tqGoNC8UZddF5YnTvMoMOPegKyRK5yrIXybuoGrrcVRbAcV+8I++dA80u4SP/G7vVmKPfPi1GzzxK2YN8DDPcEQpkLOkfowhbNVm0CU87dV4p474s83xDFra+0Ons0I53n3zzdkCK2NMKkMGgR86ow+08oAgcdIk0LtCkNzlD4/mbFqRI6dqPhwPB8u6QHXHzAtuPcjxEzZIg4LNxgmgVIEB+I4rtEKhKqmsn0mJVD08Ttg/dXIB6Z2bZZIhoZYlINgDRi3F2lnMP4uOBmOEk6TIr8qUWEZHNCPzcNE7lFoeGbHyBCn47qRigiUOH8bCZsTucfBUzODfDGBU8fbnrEG1B8osJk2qgQiHEmsI4ApP3bIOIcMcepCo/r5YXzbijBeQx2PqmbvM2ptSdxFDM45f0y9M8b8HYQQvhtjPgNneyJoqPuYei2JI1FiYE+geCSRjzqG/HCc44DJxWsNLhZ451mOVSoHUYxCjkuFynEPcBSpAzg1vxLXQM5RAG9CLiBI9jiQvNnW2o5ApF8Z3udBpuVcNR+ccweiZ8Gr3gOQvOGwjgZcQmPwAPKV5f0A7/pfyJhrKq601OJGeMRgR+eWKJAxjWlPMQfg+8K1FEdKQcuMj/KWq/VSOQjbaaJdFu22OjgiW/A6dJn3Bk/Ea4KAr7TztWH+k3XHSkmUM96LcCSwjMNdMbrLYGdXUyYAGtxNdMZJivPeIip6p+3+0UZayvF4UA6e1UxbymkldhA2hmp+giZxcq6TZE6CYK6DgEBbhXmpLqpWC683irkIKa1lgHtFlXkleEcjskqKLUFm6hqTX74yw1rbW2udtbYFWTxZwI4arHqLLfwK4I7x21RyzBpOk/eBguM3719QToMTKEHdXAJ7Ltc5hNBekUJvLgygtWlwLBaqfx9z0qtEIkY4wD2wrBeyVBYvOSr92ZuztI/MTTG8YwgpXwYUHW/oPm8Er/ZbaznztcJQvV/H/5zE9LmlAmgcYR2HkauEsXlMqemMgB9qSMM4e6qhy/CAp+JYFXetXOdho+C6XzNjMrvEnBUDWasEcSi21LP2yXCwlqw5SSD2ywJkNcyAm8twbpXhpKRrhamqHxnmBJZ4T4kE79QJROSG553MDFm71JERjBVnBqE1rsSgGsb5K5gj/IaGknOQIfCZrRi/zKKu1JPA5B6HcZHkEWQFZb+dOf9YscCot6WIusgC1oMvLnH+s8LNJnN0TJRnTT49CtYx4CmJ1xM128devP0zEuL+DK4Skv1B8NreXmtJoiZQvNtnhqp3mTvnPDLeQLz/F2//KLvrJWN1uR+AkU3xVEhCI7QAmzLcYNT1BuNEfW8arXfsU0710Xs9jDH/GmP+yfm3NOefHLTPVeLZy9Wi+jPtBo/LZGUn09DNJnkEmt0wbqdRv6qB7NsozXc9gSa1LQzYnauv+W4j4YN+E8E2wlT+wUzYwXOiqpcSJ2X7NJSdQzQW94XETWphBCJlg28MI71mzP9cHTjGptuBkpj6R1BVk2m30Th1ghuaMV8c7DgucZKcAONtYb4eHrQyXcjJJ8ckwVh/3FA5bugTSNpq2w5BSQdqFxhe0nuWGy8sS9dMHK4pR8YZJzAFrG4ShRGFu9kbhrgW6vE2PBXTWN7dQCwEi4j62NBzwA5+XxxZLICVeUFwA4LqNQPJWpFFKXRmOdAWrJ3y7vGGi2RB8p12U6J2KcQFI967wSjgm3iE8+8zOdz+9y1V0B0LnI0UTWgdlQvukcKtVYEMqpGEzHYk9bdSKJweleOBDOvRICFR8FZC4YhqTQRvQJtQjSWKwlmuGtFYzYYZYJxWkm0aqPlH2JgnRm34o5YZzdyUaEyMkHMff6Aw4Lcu8CSQYkFg0w2Ncc+QLdIUR5B+DCbI9V0bS/joiJUJnBrRLuGqERFYGBOarCccmUBFAzEqv4VyZENM6A8JMx6l5FXXXaQ1GilgVwLMPjUS26iOK/NAi3p0Mg45dcT1SOafJSNWjUBz51Y73gaR2Gb0wl9FuOZuV5cGXz2uBtCwqYPg4hBgrJZCoLlvJ2lL3wEEtwGC/eP701HuizhANchdlGL95SwKnBDi28gh2lL7zETu+9FeoFpKgksHvXYEDbSXzk+ww7C1Vpzo8dgA2OS5Cy9q5MNPOn8wjc0uc4dDL8gs5VTpNYJgYcoTcmBtBiZ1HdL7hqq6rksNVcf72NL3w9xsjoE8WmVHDTOkCEQxHkeNUIbh1zBcPR2C3K1S6jDW0C+ubuDGf26Fm+IZx0XULZApq4yzlHJ/UM+cM5e2vAY5tk0Z3YKU5bFoNOuUUuGgksii5DH8+VQKewXzSo7WE/zGajalyHeS3jlMqATvpNq9TBVP8l2AR9V5qFT8FMWDvJ31u3PutC8Qk7qpwqSiI06wk3cCDiL3fMvM3Sh7wFcYPjAE9JzOthIl4cJHXKdEIIomp9YnQWUQRnxFpQuHkeXGabaDwZo4qXZV0b5cY6xKXKXpUuL+1I+GBrwWYLzvfdT44JRp1OfQJFCQlrUJFj5kavoCLDUfnM33epP0naujsIJHeFFVA/jWQv+az++gX2JYKAdUkhJHakyPlHCxyRu6PXEcLDpLyjNPrI19idTZOIJJY1upk8beYTxMuWiIWUHxjV+c3GpKVk7SF1igaZJkIhehjWY3KWJ9TyMhvtI3nQh/5rhZhUmVQMSk9dVEqnI9EXFY9htzbKeBrxvlJkgcC3+jObd9KoU8QNDMP3tCAyRW6J0SjOMAReN7pRzH53ywym/tkzZ3HMkZeAu3GH9yzpVcNy2Fr5k8BlKzdA4HUfT7OS6HbTKI+IPQTo0KnWIPPVqPPUWZkYy5KCQuHgrkInreM2qdJK2nx3oJoXdKiJUEgiOVJciZSkKVGIOTHbotDH2LQyRB5SD/HiLBZOFVyY5yNXMhFx2Q97VuURFVaQeIn+wmrkkGVSTSPvOuCoECZB8D+yXZfT4RJmd3lZ+VQEFjB2qu9FAVMCTurwlztJdsyxwQsqiyfXYCZdwnmv2ztzM0Nu80r1Obi0DNBVuLtaXHG3PjZTfDoglEDKb1yvO1Ujk2heapic8p4kH+I77kfuecs8rzbqLbSB6bGWlf3wxdtTD4Du3cdOabgEAeQT8IGS+LugTdBn42jKiQ+O67xqdA17WkfcSVyiA4RvbUBEZXvtaaY+3nAnHq65voo7EEEiwNF+uedTvROrGNhDVWD0v3HwOEk+Bywp05JJCccE7Bvdp7ZtnLnnBpe47T1TliMQSKELHSUJedjGOxWp2LamSSR11JmFA78vBuTIATbqkcvaGSMqe2tvnialTtU6rUnTD2krvvNPf3F0Ugf91zTjVvhOXxqd/k8tNmuQJ7qQTKIWunPSHYK1+RkPQcofJTmFsIEu40cJlYDqX0ckuY9ySnbm5cLE5JSNyG1ROvfMZu5PoOoYu5S/9FsDgCFRD1MEKkb6Bmz5HMogI/BYEMQFRtUJz4vgT4D7YTYMMaoqcPAAAAAElFTkSuQmCC" alt=""><b>${titulo}</b><span>${texto}</span>${acao}</div>`;
@@ -1676,14 +1677,35 @@ function svgLinha({pontos, media, w=760, h=170, fmt=brl}){
   pontos.forEach((p,i)=>{ s += `<circle cx="${x(i)}" cy="${y(p.y)}" r="3.5" fill="#fff" stroke="var(--preto)" stroke-width="2"><title>${esc(p.rot)} · ${fmt(p.y)}</title></circle>`; if(pontos.length<=14 || i%Math.ceil(pontos.length/12)===0) s += `<text x="${x(i)}" y="${h-padB+16}" text-anchor="middle" font-size="9.5" fill="#6F6F6B">${esc(p.x)}</text>`; });
   return s + '</svg>';
 }
+/* série de preços por mês: faixa cinza (menor–maior), linha preta (média ponderada do mês), tracejado amarelo (média do período) */
+function svgSeriePrecos({meses, media, w=780, h=190, fmt=brl}){
+  if(!meses.length) return '';
+  const padL=58, padR=16, padT=16, padB=30, n=meses.length;
+  const lo = Math.min(...meses.map(m=>m.min), media||Infinity), hi = Math.max(...meses.map(m=>m.max), media||0);
+  const folga = (hi-lo)*0.12 || hi*0.05 || 1; const yMin = lo-folga, yMax = hi+folga;
+  const x = i => n===1 ? (padL+w-padR)/2 : padL + (w-padL-padR)*i/(n-1);
+  const y = v => padT + (h-padT-padB)*(1-(v-yMin)/(yMax-yMin));
+  let s = `<svg class="grafico" viewBox="0 0 ${w} ${h}" role="img" aria-label="Preço médio pago por mês">`;
+  [yMin+folga, (yMin+yMax)/2, yMax-folga].forEach(v=>{ s += `<line x1="${padL}" x2="${w-padR}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grade)"/><text x="${padL-8}" y="${y(v)+4}" text-anchor="end" font-size="10.5" font-weight="500" fill="#585857">${fmt(v)}</text>`; });
+  if(n>1) s += `<path d="M${meses.map((m,i)=>`${x(i)},${y(m.max)}`).join(' L')} L${[...meses].reverse().map((m,i)=>`${x(n-1-i)},${y(m.min)}`).join(' L')} Z" fill="var(--n-200)" opacity=".75"/>`;
+  if(media) s += `<line x1="${padL}" x2="${w-padR}" y1="${y(media)}" y2="${y(media)}" stroke="var(--media)" stroke-width="2" stroke-dasharray="6 4"/><text x="${w-padR}" y="${y(media)-6}" text-anchor="end" font-size="10.5" font-weight="700" fill="#7A5410">média do período ${fmt(media)}</text>`;
+  s += `<polyline fill="none" stroke="var(--preto)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" points="${meses.map((m,i)=>`${x(i)},${y(m.med)}`).join(' ')}"/>`;
+  const passo = Math.max(1, Math.ceil(n/8));
+  meses.forEach((m,i)=>{
+    if(n<=36) s += `<circle cx="${x(i)}" cy="${y(m.med)}" r="3.2" fill="#fff" stroke="var(--preto)" stroke-width="2"><title>${MESES[m.m-1]}/${m.a} · ${fmt(m.med)}</title></circle>`;
+    else s += `<circle cx="${x(i)}" cy="${y(m.med)}" r="6" fill="transparent"><title>${MESES[m.m-1]}/${m.a} · ${fmt(m.med)}</title></circle>`;
+    if(i%passo===0 || i===n-1) s += `<text x="${x(i)}" y="${h-padB+18}" text-anchor="middle" font-size="10.5" font-weight="600" fill="#585857">${MESES[m.m-1]}/${String(m.a).slice(2)}</text>`;
+  });
+  return s + '</svg>';
+}
 /* tooltip para <title> de svg — mais bonito que o nativo */
 document.addEventListener('mousemove', e=>{
   const el = e.target.closest && e.target.closest('.grafico [aria-label], .grafico title'); const tt = $('#tooltip');
   const alvo = e.target.closest && e.target.closest('.grafico rect.col, .grafico circle');
   if(!alvo){ tt.classList.remove('is-on'); return; }
   const t = alvo.querySelector('title'); if(!t){ tt.classList.remove('is-on'); return; }
-  const [rot, val] = t.textContent.split(' · ');
-  tt.innerHTML = `<span class="tt-l">${esc(rot)}</span><br><b>${esc(val||'')}</b>`;
+  const partes = t.textContent.split(' · '); const [rot, val] = partes;
+  tt.innerHTML = `<span class="tt-l">${esc(rot)}</span><br><b>${esc(val||'')}</b>${partes.length>2 ? `<br><span class="tt-l">${esc(partes.slice(2).join(' · '))}</span>` : ''}`;
   tt.style.left = Math.min(e.clientX+14, window.innerWidth-180)+'px'; tt.style.top = (e.clientY-44)+'px';
   tt.classList.add('is-on');
 });
@@ -2061,6 +2083,7 @@ function nfRender(){
 }
 let nfListaAtual = [];
 $('#nfLote').onclick = async ()=>{
+  if(window.PORTAL_API===null){ toast('Para baixar os XMLs, abra o portal pelo abrir_portal.bat (ele liga o servidor local).'); return; }
   if(!window.PORTAL_API){ toast('XMLs do período compactados em um .zip e baixados.'); return; }
   const ids = nfListaAtual.map(n=>n.docEntry).filter(Boolean);
   if(!ids.length){ toast('Nenhuma nota na lista atual.'); return; }
@@ -2089,7 +2112,13 @@ $('#nfTabela').addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' '
 
 /* ===== itens ===== */
 /* Itens e preços — "quanto paguei na dicroica?": busca por LM/descrição, ficha com histórico de preços */
-const HIST = {busca:'', periodo:'tudo', ord:{c:'total',asc:false}, abertos:new Set()};
+const HIST = {busca:'', periodo:'tudo', ord:{c:'total',asc:false}, abertos:new Set(), todasCompras:new Set()};
+/* agrega as compras do item por mês: média ponderada, menor, maior, nº de compras */
+function serieMensal(compras){
+  const por = new Map();
+  compras.forEach(x=>{ const k = x.nota.a*100+x.nota.m; const r = por.get(k) || {a:x.nota.a, m:x.nota.m, qtd:0, total:0, n:0, min:Infinity, max:0}; r.qtd += x.qtd; r.total += x.total; r.n++; r.min = Math.min(r.min, x.preco); r.max = Math.max(r.max, x.preco); por.set(k, r); });
+  return [...por.keys()].sort((a,b)=>a-b).map(k=>{ const r = por.get(k); r.med = r.qtd ? r.total/r.qtd : 0; return r; });
+}
 
 function histDentroPeriodo(n){ switch(HIST.periodo){ case 'esteAno': return n.a===HOJE.a; case 'm12': return mesIdx(n.a,n.m) > mesIdx(HOJE.a,HOJE.m)-13; default: return true; } }
 /* compras do item no período (uma linha por nota) */
@@ -2150,7 +2179,9 @@ function histRender(){
 function fichaHTML(f){
   const c = f.compras; const cons = consolidado();
   const varTotal = f.primeiro.preco ? (f.ultimo.preco-f.primeiro.preco)/f.primeiro.preco*100 : 0;
-  const pontos = c.map(x=>({x:`${MESES[x.nota.m-1]}/${String(x.nota.a).slice(2)}`, y:x.preco, rot:`NF ${x.nota.num} · ${x.nota.data}`}));
+  const meses = serieMensal(c).map(r=>({...r, }));
+  const todas = HIST.todasCompras.has(f.lm); const LIMITE = 12;
+  const lista = [...c].reverse(); const visiveis = todas ? lista : lista.slice(0, LIMITE);
   return `<div class="hist-ficha__miolo">
     <dl class="def">
       <div><dt>Último preço pago</dt><dd>${brl(f.ultimo.preco)} <small>${f.ultimo.nota.data} · NF ${f.ultimo.nota.num}</small></dd></div>
@@ -2160,11 +2191,12 @@ function fichaHTML(f){
       <div><dt>Do 1º ao último preço</dt><dd>${c.length>1 ? tendPreco(varTotal) : '<small>só uma compra</small>'}</dd></div>
       <div><dt>Total no período</dt><dd>${brl(f.total)} <small>${num(f.qtd)} ${f.item.un}</small></dd></div>
     </dl>
-    ${c.length>1 ? svgLinha({pontos, media:f.medio, w:780, h:170}) : ''}
+    ${meses.length>1 ? svgSeriePrecos({meses, media:f.medio, w:780, h:190}) + `<div class="legenda"><span><i style="background:var(--preto)"></i>preço médio do mês (ponderado)</span><span><i style="background:var(--n-200)"></i>faixa entre o menor e o maior preço do mês</span><span><i style="background:var(--media)"></i>média do período</span></div>` : ''}
     ${cons ? histPorLojaHTML(f) : ''}
-    <h4>Compras deste item <span class="mudo">${c.length}</span></h4>
+    <h4>Compras deste item <span class="mudo">${c.length}${!todas && c.length>LIMITE ? ` · mostrando as ${LIMITE} mais recentes` : ''}</span></h4>
     <table><thead><tr><th>NF</th><th>Data</th>${cons?'<th>Loja</th>':''}<th class="num">Qtd</th><th class="num">Unitário</th><th class="num">Total</th><th class="num">Vs. compra anterior</th></tr></thead>
-    <tbody>${[...c].reverse().map((x,i,arr)=>{ const ant = arr[i+1]; const d = ant ? (x.preco-ant.preco)/ant.preco*100 : null; return `<tr><td><button class="link" data-drawer-nota="${x.nota.num}">${x.nota.num}</button></td><td>${x.nota.data}</td>${cons?`<td>${chipLoja(x.nota.loja)}</td>`:''}<td class="num">${num(x.qtd)}</td><td class="num">${brl(x.preco)}</td><td class="num destaque">${brl(x.total)}</td><td class="num">${d==null?'<span class="mudo">—</span>':tendPreco(d)}</td></tr>`; }).join('')}</tbody></table>
+    <tbody>${visiveis.map((x,i)=>{ const ant = lista[i+1]; const d = ant ? (x.preco-ant.preco)/ant.preco*100 : null; return `<tr><td><button class="link" data-drawer-nota="${x.nota.num}">${x.nota.num}</button></td><td>${x.nota.data}</td>${cons?`<td>${chipLoja(x.nota.loja)}</td>`:''}<td class="num">${num(x.qtd)}</td><td class="num">${brl(x.preco)}</td><td class="num destaque">${brl(x.total)}</td><td class="num">${d==null?'<span class="mudo">—</span>':tendPreco(d)}</td></tr>`; }).join('')}</tbody></table>
+    ${c.length>LIMITE ? `<button class="link hist-todas" data-todas="${f.lm}" style="margin-top:10px;font-size:12px">${todas ? 'Mostrar só as 12 mais recentes' : `Ver todas as ${c.length} compras`}</button>` : ''}
   </div>`;
 }
 /* quanto cada loja pagou neste item (preço médio ponderado por loja) */
@@ -2186,7 +2218,7 @@ $('#histBusca').oninput = e=>{ HIST.busca = e.target.value; histRender(); };
 $('#histLimpar').onclick = ()=>{ HIST.busca=''; $('#histBusca').value=''; HIST.abertos.clear(); histRender(); $('#histBusca').focus(); };
 $$('#histSeg button').forEach(b=>b.onclick=()=>{ HIST.periodo=b.dataset.periodo; histRender(); });
 function histToggle(lm){ if(HIST.abertos.has(lm)) HIST.abertos.delete(lm); else HIST.abertos.add(lm); histRender(); }
-$('#histTabela').addEventListener('click', e=>{ if(e.target.closest('button')) return; const tr=e.target.closest('tr[data-item]'); if(tr) histToggle(tr.dataset.item); });
+$('#histTabela').addEventListener('click', e=>{ const bt = e.target.closest('[data-todas]'); if(bt){ const lm = bt.dataset.todas; if(HIST.todasCompras.has(lm)) HIST.todasCompras.delete(lm); else HIST.todasCompras.add(lm); histRender(); return; } if(e.target.closest('button, a')) return; const tr=e.target.closest('tr[data-item]'); if(tr) histToggle(tr.dataset.item); });
 $('#histTabela').addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && e.target.matches('tr[data-item]')){ e.preventDefault(); histToggle(e.target.dataset.item); } });
 
 /* ===== financeiro ===== */
