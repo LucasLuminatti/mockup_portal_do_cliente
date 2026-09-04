@@ -1271,14 +1271,15 @@ try{ const l = localStorage.getItem('pc.loja'); if(l && (l==='todas' || lojaPorC
 const REG = {}; // REG[pagina] = {titulo, render(params)}
 const lojaAtual = () => EST.loja;
 const filtrarPorLoja = lista => EST.loja==='todas' ? lista : lista.filter(x=>x.loja===EST.loja);
-const consolidado = () => EST.loja==='todas';
+const consolidado = () => EST.loja==='todas' && LOJAS.length>1;
 const lojasAtivas = () => EST.loja==='todas' ? LOJAS : [lojaPorCod(EST.loja)];
 
 function atualizarContexto(){
   const todas = consolidado();
   $('#lojaSelNome').textContent = todas ? 'Todas as lojas' : nomeLoja(EST.loja);
-  $('#lojaSelSelo').hidden = !todas;
-  $('#crumb').textContent = todas ? `Todas as lojas · ${LOJAS.length} somadas` : `Só ${nomeLoja(EST.loja)} · ${EST.loja}`;
+  $('#lojaSelSelo').hidden = !(todas && LOJAS.length>1);
+  $('#lojaSelNome').textContent = todas ? (LOJAS.length>1 ? 'Todas as lojas' : nomeLoja((LOJAS[0]||{}).cod)) : nomeLoja(EST.loja);
+  $('#crumb').textContent = todas ? (LOJAS.length>1 ? `Todas as lojas · ${LOJAS.length} somadas` : `Loja única · ${(LOJAS[0]||{}).cod||''}`) : `Só ${nomeLoja(EST.loja)} · ${EST.loja}`;
 }
 function atualizarBadges(){
   const pend = linhasPendentes(filtrarPorLoja(PEDIDOS)).length;
@@ -1293,7 +1294,7 @@ function setLoja(cod){
   try{ localStorage.setItem('pc.loja', cod); }catch(e){}
   atualizarContexto(); atualizarBadges();
   if(REG[EST.pagina]) REG[EST.pagina].render({});
-  toast(cod==='todas' ? `Mostrando as ${LOJAS.length} lojas somadas` : `Mostrando só ${nomeLoja(cod)}`);
+  toast(cod==='todas' ? (LOJAS.length>1 ? `Mostrando as ${LOJAS.length} lojas somadas` : 'Mostrando a loja') : `Mostrando só ${nomeLoja(cod)}`);
 }
 function irPara(p, params={}){
   if(!REG[p]) return;
@@ -1725,7 +1726,7 @@ function dashRender(){
   $('#dashPeriodoBtn').classList.toggle('is-on', !ehAtalho);
   $('#dashPeriodoRot').textContent = ehAtalho ? 'Outro período' : PERIODOS[DASH.periodo].rot;
   $('#dashCustom').hidden = DASH.periodo!=='personalizado';
-  $('#dashSub').textContent = `${per.rotAtual} comparado com ${per.rotAnterior}${loja==='todas' ? ` · ${LOJAS.length} lojas somadas` : ' · só '+nomeLoja(loja)}`;
+  $('#dashSub').textContent = `${per.rotAtual} comparado com ${per.rotAnterior}${loja==='todas' ? (LOJAS.length>1 ? ` · ${LOJAS.length} lojas somadas` : '') : ' · só '+nomeLoja(loja)}`;
   const faixa = ' · ' + per.rotAtual.replace(/ \d{4}$/,'');
 
   /* meses acima do anterior (par a par) */
@@ -1767,7 +1768,7 @@ function dashRender(){
     <tr><td>Variação</td>${paresG.map(p=>`<td>${p.atu==null||!p.ant?'—':tend((p.atu-p.ant)/p.ant*100)}</td>`).join('')}<td>${totAnt?tend(delta):'—'}</td></tr></tbody></table>`;
 
   /* por loja */
-  if(loja==='todas'){
+  if(loja==='todas' && LOJAS.length>1){
     const linhas = LOJAS.map(l=>({l, atu:somaMeses(per.atual,l.cod), ant:somaMeses(per.anterior,l.cod)}));
     const max = Math.max(1,...linhas.flatMap(x=>[x.atu,x.ant]));
     $('#dashPorLojaSub').textContent = `${esc(nomeAtu)} × ${esc(nomeAnt)} · clique para ver só uma loja`;
@@ -1777,8 +1778,8 @@ function dashRender(){
         <span class="dash-loja__vals">${brlCurto(x.atu)}<small>${x.ant?brlCurto(x.ant):'—'}</small>${x.ant?' '+tend((x.atu-x.ant)/x.ant*100):''}</span></button>`).join('')}</div>
       <div class="legenda"><span><i style="background:var(--serie-atual)"></i>${esc(nomeAtu)}</span><span><i style="background:var(--serie-anterior)"></i>${esc(nomeAnt)}</span><span class="mudo">Soma das ${LOJAS.length} lojas = ${brl(totAtu)}</span></div>`;
   } else {
-    $('#dashPorLojaSub').textContent = 'Você está vendo uma loja';
-    $('#dashPorLoja').innerHTML = `<p class="dash-loja__so">Estes números são só de <b>${esc(nomeLoja(loja))}</b> (${loja}).<br><button class="link" data-loja-sel="todas">Ver as ${LOJAS.length} lojas somadas</button></p>`;
+    $('#dashPorLojaSub').textContent = LOJAS.length>1 ? 'Você está vendo uma loja' : 'Este cliente tem uma única loja';
+    $('#dashPorLoja').innerHTML = LOJAS.length>1 ? `<p class="dash-loja__so">Estes números são só de <b>${esc(nomeLoja(loja))}</b> (${loja}).<br><button class="link" data-loja-sel="todas">Ver as ${LOJAS.length} lojas somadas</button></p>` : `<p class="dash-loja__so"><b>${esc(nomeLoja((LOJAS[0]||{}).cod))}</b> · ${(LOJAS[0]||{}).cod||''}<br><span class="mudo">Quando o cliente tiver mais lojas, elas aparecem aqui somadas e separadas.</span></p>`;
   }
 
   /* top itens */
