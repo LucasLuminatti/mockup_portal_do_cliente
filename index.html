@@ -527,19 +527,6 @@ button.dash-loja__linha:hover{background:var(--n-100)}
 }
 @media(max-width:600px){.dash-placar__num--atual{font-size:32px}.dash-placar{flex-direction:column;align-items:flex-start;gap:12px}}
 
-/* ===== saldo ===== */
-.sld-item{font-weight:600}
-.sld-item small{display:block;font-weight:400;color:var(--texto-mudo);font-size:11px;white-space:normal;max-width:320px}
-.sld-prev{font-size:11.5px}
-.sld-prev.is-vencida{color:var(--alerta);font-weight:600}
-.sld-prev.is-sem{color:var(--texto-mudo)}
-.sld-prev.is-aguardando{color:var(--alerta)}
-.sld-ped{display:flex;align-items:center;gap:8px;padding:12px 14px;background:var(--n-050)}
-.sld-ped b{font-weight:600}
-.sld-ped .mudo{font-size:11.5px}
-.sld-ped .btn{margin-left:auto}
-tr.sld-grupo td{padding:0;border-bottom:1px solid var(--n-200)}
-
 /* ===== pedidos ===== */
 .ped-num{font-weight:700}
 .ped-itens{color:var(--texto-mudo);font-size:11.5px}
@@ -718,7 +705,6 @@ tr.hist-ficha td{padding:0 13px 18px;background:var(--n-050);white-space:normal}
     <nav class="nav" aria-label="Compras">
       <button class="nav__item" data-page="dash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6" rx="1"/><rect x="12" y="7" width="3" height="10" rx="1"/><rect x="17" y="13" width="3" height="4" rx="1"/></svg>Visão geral</button>
       <button class="nav__item" data-page="pedidos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m21 8-9-5-9 5v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg>Meus pedidos</button>
-      <button class="nav__item" data-page="saldo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg>O que falta chegar<span class="nav__badge" id="badgeSaldo" hidden></span></button>
       <button class="nav__item" data-page="notas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>Notas fiscais de compra</button>
       <button class="nav__item" data-page="itens"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m20.6 13.4-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.3"/></svg>Itens e preços</button>
     </nav>
@@ -808,26 +794,6 @@ tr.hist-ficha td{padding:0 13px 18px;background:var(--n-050);white-space:normal}
     <div class="dash-top" id="dashTop"></div>
   </div>
   <div id="dashNota"></div>
-</section>
-
-<!-- ===== saldo ===== -->
-<section class="page" id="page-saldo">
-  <div class="page__cabeca">
-    <p class="frase-resumo" id="saldoResumo"></p>
-    <div class="acoes-cabeca"><button class="btn btn--sm" data-toast="Relatório de itens pendentes exportado (Excel).">${IC_BAIXAR}Exportar itens</button></div>
-  </div>
-  <div class="filtros">
-    <div class="seg" id="saldoModo"><button data-modo="item" class="is-on">Por item</button><button data-modo="pedido">Por pedido</button></div>
-    <div class="busca-inline">${IC_BUSCA}<input id="saldoBusca" placeholder="Item, código LM ou nº do pedido" aria-label="Buscar item ou pedido"><button class="limpar" id="saldoLimpar" aria-label="Limpar busca">${IC_X}</button></div>
-    <span class="divisor"></span>
-    <button class="pill" id="saldoPrevVencida" data-filtro="prevVencida">Previsão vencida <span class="cnt" id="saldoPrevCnt">0</span></button>
-    <button class="pill" id="saldoSemPrev" data-filtro="semPrev">Sem previsão <span class="cnt" id="saldoSemCnt">0</span></button>
-  </div>
-  <div class="card">
-    <div class="tabela-wrap" id="saldoTabela"></div>
-    <div class="tabela-foot" id="saldoFoot"></div>
-  </div>
-  <div id="saldoNota"></div>
 </section>
 
 <!-- ===== pedidos ===== -->
@@ -1301,7 +1267,7 @@ function atualizarBadges(){
   const pend = linhasPendentes(filtrarPorLoja(PEDIDOS)).length;
   const venc = filtrarPorLoja(TITULOS).filter(t=>situacaoTitulo(t)==='vencido').length;
   const nao = NOTIFICACOES.filter(n=>!n.lida).length;
-  const set = (id,v)=>{ const b=$(id); b.textContent=v; b.hidden = !v; };
+  const set = (id,v)=>{ const b=$(id); if(!b) return; b.textContent=v; b.hidden = !v; };
   set('#badgeSaldo', pend); set('#badgeFin', venc); set('#badgeCom', nao);
   $('#sinoDot').classList.toggle('is-on', nao>0);
 }
@@ -1871,7 +1837,6 @@ function dashRender(){
   const em30 = tits.filter(t=>situacaoTitulo(t)==='aberto' && diasEntre(HOJE_STR,t.venc)<=30);
   const venc = tits.filter(t=>situacaoTitulo(t)==='vencido');
   $('#dashHoje').innerHTML = `
-    <button class="dash-hoje__item" data-goto="saldo">${IC.caminhao}<span class="dash-hoje__txt"><span class="dash-hoje__n">${brl(pendVal)}</span><span class="dash-hoje__s">falta chegar · ${pend.length} ${pend.length===1?'item':'itens'} de ${new Set(pend.map(x=>x.pedido.num)).size} pedidos</span></span>${IC.seta}</button>
     <button class="dash-hoje__item" data-goto="financeiro" data-params='{"filtro":"aberto"}'>${IC.doc}<span class="dash-hoje__txt"><span class="dash-hoje__n">${brl(em30.reduce((s,t)=>s+t.valor,0))}</span><span class="dash-hoje__s">vence nos próximos 30 dias · ${em30.length} ${em30.length===1?'boleto':'boletos'}</span></span>${IC.seta}</button>
     <button class="dash-hoje__item" data-goto="financeiro" data-params='{"filtro":"vencido"}'>${IC.info}<span class="dash-hoje__txt"><span class="dash-hoje__n ${venc.length?'is-erro':''}">${brl(venc.reduce((s,t)=>s+valorAtualizado(t),0))}</span><span class="dash-hoje__s">${venc.length ? `vencido · ${venc.length} ${venc.length===1?'boleto':'boletos'} · valor atualizado` : 'nada vencido'}</span></span>${IC.seta}</button>`;
 
@@ -1901,76 +1866,6 @@ $('#page-dash').addEventListener('click', e=>{
   const col = e.target.closest('.grafico rect.col[data-mes]'); if(col && col.dataset.mes){ const [a,m]=col.dataset.mes.split('-').map(Number); irPara('notas',{mes:{a,m}}); }
 });
 $('#page-dash').addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && e.target.matches('.grafico rect.col[data-mes]')){ e.preventDefault(); e.target.click(); } });
-
-/* ===== saldo ===== */
-/* O que falta chegar — itens com quantidade pendente de faturamento, por item ou por pedido */
-const SALDO = {modo:'item', busca:'', filtro:null, ord:{c:'ped',asc:false}, agrupar:false};
-$('#page-saldo').innerHTML = $('#page-saldo').innerHTML.replace(/\$\{IC_BAIXAR\}/g, IC.baixar).replace(/\$\{IC_BUSCA\}/g, IC.busca).replace(/\$\{IC_X\}/g, IC.x);
-
-const saldoPrevisao = l => {
-  if(l.pedido.status==='aguardando') return '<span class="sld-prev is-aguardando">aguardando aprovação</span>';
-  if(!l.pedido.previsao) return '<span class="sld-prev is-sem">sem previsão informada</span>';
-  const venc = dnum(l.pedido.previsao) < dnum(HOJE_STR);
-  return `<span class="sld-prev ${venc?'is-vencida':''}">${venc?'previsão vencida · ':'previsão '}${l.pedido.previsao}</span>`;
-};
-const saldoPrevVencida = l => l.pedido.previsao && dnum(l.pedido.previsao) < dnum(HOJE_STR);
-
-function saldoRender(){
-  let linhas = linhasPendentes(filtrarPorLoja(PEDIDOS));
-  const todasLinhas = linhas;
-  const q = semAcento(SALDO.busca);
-  if(q) linhas = linhas.filter(l=>semAcento(l.item.lm+' '+itemPorLm(l.item.lm).desc+' '+l.pedido.num).includes(q));
-  if(SALDO.filtro==='prevVencida') linhas = linhas.filter(saldoPrevVencida);
-  if(SALDO.filtro==='semPrev') linhas = linhas.filter(l=>!l.pedido.previsao && l.pedido.status!=='aguardando');
-  $('#saldoPrevCnt').textContent = todasLinhas.filter(saldoPrevVencida).length;
-  $('#saldoSemCnt').textContent = todasLinhas.filter(l=>!l.pedido.previsao && l.pedido.status!=='aguardando').length;
-  $$('#page-saldo [data-filtro]').forEach(b=>b.classList.toggle('is-on', b.dataset.filtro===SALDO.filtro));
-  $$('#saldoModo button').forEach(b=>b.classList.toggle('is-on', b.dataset.modo===SALDO.modo));
-  $('#saldoLimpar').classList.toggle('is-on', !!SALDO.busca);
-
-  const total = todasLinhas.reduce((s,l)=>s+l.valor,0), nPed = new Set(todasLinhas.map(l=>l.pedido.num)).size;
-  $('#saldoResumo').innerHTML = todasLinhas.length
-    ? `Você ainda tem <b>${todasLinhas.length} ${todasLinhas.length===1?'item':'itens'}</b> de <b>${nPed} ${nPed===1?'pedido':'pedidos'}</b> por receber, somando <b>${brl(total)}</b>.${consolidado()?` <span class="mudo">Soma das ${lojasAtivas().length} lojas.</span>`:''}`
-    : `Nada pendente${consolidado()?'':' em '+esc(nomeLoja(lojaAtual()))}. Tudo o que você pediu já foi faturado.`;
-
-  const cons = consolidado();
-  if(!linhas.length){
-    $('#saldoTabela').innerHTML = vazio(todasLinhas.length ? `Nada com esse filtro` : 'Nada pendente', todasLinhas.length ? 'Tente outra busca ou remova o filtro.' : 'Tudo o que você pediu já foi faturado. Os itens de novos pedidos aparecem aqui assim que forem aprovados.', todasLinhas.length ? '' : `<button class="btn btn--sm" data-goto="pedidos">Ver meus pedidos</button>`);
-    $('#saldoFoot').innerHTML = ''; return;
-  }
-  const linhaHTML = l => { const it = itemPorLm(l.item.lm); const pf = l.item.qtdFaturada/l.item.qtd*100; return `<tr>
-      <td class="col-fixa"><span class="sld-item">${l.item.lm}<small>${esc(it.desc)}</small></span></td>
-      ${cons?`<td>${chipLoja(l.pedido.loja)}</td>`:''}
-      <td><button class="link" data-drawer-pedido="${l.pedido.num}">${l.pedido.num}</button><br><span class="mudo">${l.pedido.data}</span></td>
-      <td class="num">${num(l.item.qtd)}</td>
-      <td class="num"><span class="progresso"><i><b style="width:${pf}%"></b></i>${num(l.item.qtdFaturada)}</span></td>
-      <td class="num destaque">${num(l.aberto)}</td>
-      <td class="num destaque">${brl(l.valor)}</td>
-      <td>${saldoPrevisao(l)}</td></tr>`; };
-  const cabec = `<thead><tr>${thSort('Item','item',SALDO.ord,'col-fixa')}${cons?'<th>Loja</th>':''}${thSort('Pedido','ped',SALDO.ord)}<th class="num">Pedida</th><th class="num">Faturada</th>${thSort('A receber','aberto',SALDO.ord,'num')}${thSort('Valor','valor',SALDO.ord,'num')}${thSort('Previsão','prev',SALDO.ord)}</tr></thead>`;
-  const rodape = (lista, rot='Total', cls='') => `<tr class="${cls}"><td class="col-fixa">${rot}</td>${cons?'<td></td>':''}<td>${new Set(lista.map(l=>l.pedido.num)).size} pedidos</td><td class="num">${num(lista.reduce((s,l)=>s+l.item.qtd,0))}</td><td class="num">${num(lista.reduce((s,l)=>s+l.item.qtdFaturada,0))}</td><td class="num">${num(lista.reduce((s,l)=>s+l.aberto,0))}</td><td class="num">${brl(lista.reduce((s,l)=>s+l.valor,0))}</td><td></td></tr>`;
-
-  linhas = ordenar(linhas, SALDO.ord, {item:l=>l.item.lm, ped:l=>+l.pedido.num, aberto:l=>l.aberto, valor:l=>l.valor, prev:l=>l.pedido.previsao?dnum(l.pedido.previsao):'99999999'});
-  let corpo;
-  if(SALDO.modo==='pedido'){
-    const grupos = {}; linhas.forEach(l=>{ (grupos[l.pedido.num]=grupos[l.pedido.num]||[]).push(l); });
-    corpo = Object.keys(grupos).sort((a,b)=>+b-+a).map(num_=>{ const g=grupos[num_], p=g[0].pedido; const colspan = cons?8:7; return `<tr class="sld-grupo"><td colspan="${colspan}"><div class="sld-ped"><b>Pedido ${p.num}</b><span class="mudo">${p.data}${cons?' · '+esc(nomeLoja(p.loja)):''} · ${tagPedido(p.status)}</span><span class="mudo">${g.length} ${g.length===1?'item':'itens'} · ${brl(g.reduce((s,l)=>s+l.valor,0))} a receber</span><button class="btn btn--sm btn--ghost" data-drawer-pedido="${p.num}">Ver pedido</button></div></td></tr>` + g.map(linhaHTML).join(''); }).join('');
-  } else if(cons && SALDO.agrupar){
-    const porLoja = [...linhas].sort((a,b)=>LOJAS.findIndex(l=>l.cod===a.pedido.loja)-LOJAS.findIndex(l=>l.cod===b.pedido.loja));
-    corpo = comSubtotais(porLoja.map(l=>({...l, lojaCod:l.pedido.loja})), 'lojaCod', linhaHTML, (l,g)=>rodape(g, 'Subtotal '+l.nome, 'sub-loja'));
-  } else corpo = linhas.map(linhaHTML).join('');
-
-  $('#saldoTabela').innerHTML = `<table>${cabec}<tbody>${corpo}</tbody><tfoot>${rodape(linhas)}</tfoot></table>`;
-  $('#saldoFoot').innerHTML = `<span class="info">${linhas.length} ${linhas.length===1?'linha':'linhas'} de item · ${brl(linhas.reduce((s,l)=>s+l.valor,0))} a receber</span>${cons && SALDO.modo==='item' ? `<label class="agrupar"><input type="checkbox" id="saldoAgrupar" ${SALDO.agrupar?'checked':''}>Agrupar por loja</label>` : ''}`;
-  const ag = $('#saldoAgrupar'); if(ag) ag.onchange = ()=>{ SALDO.agrupar = ag.checked; saldoRender(); };
-  ligarSort($('#page-saldo'), SALDO.ord, saldoRender);
-  $('#saldoNota').innerHTML = notaSPS('linha = <b>RDR1</b> com <b>OpenQty &gt; 0</b> de pedidos não cancelados; valor = OpenQty × Price. Previsão = RDR1.ShipDate (ou ORDR.DocDueDate quando a linha não tiver). "Aguardando aprovação" = pedido em rascunho de aprovação (OWDD). Mostrar sempre a soma no rodapé.');
-}
-REG.saldo = {titulo:'O que falta chegar', render(params){ if(params && params.filtro) SALDO.filtro = params.filtro; saldoRender(); }};
-$$('#saldoModo button').forEach(b=>b.onclick=()=>{ SALDO.modo=b.dataset.modo; saldoRender(); });
-$$('#page-saldo [data-filtro]').forEach(b=>b.onclick=()=>{ SALDO.filtro = SALDO.filtro===b.dataset.filtro ? null : b.dataset.filtro; saldoRender(); });
-$('#saldoBusca').oninput = e=>{ SALDO.busca = e.target.value; saldoRender(); };
-$('#saldoLimpar').onclick = ()=>{ SALDO.busca=''; $('#saldoBusca').value=''; saldoRender(); };
 
 /* ===== pedidos ===== */
 /* Meus pedidos — lista com situação na perspectiva do cliente, drawer com passos, itens, notas */

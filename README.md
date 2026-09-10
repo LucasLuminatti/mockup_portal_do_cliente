@@ -27,7 +27,6 @@ Roteiro de demonstração:
 - **Visão geral**: filtros de período (este mês, mês passado, 3/6/12 meses, este ano, ano passado,
   personalizado) e atalhos 2025 / 2026 / 2025 × 2026. Placar com variação, gráfico preto × amarelo,
   "Ver números", por loja, itens mais comprados e a zona "Hoje". Clique numa coluna abre as notas do mês.
-- **O que falta chegar**: itens com quantidade pendente, por item ou por pedido, com previsão.
 - **Itens e preços**: digite `dicroica` para ver o histórico de preços (último, médio ponderado, menor, maior).
 - **Meus boletos**: clique em "Ver boleto" para a 2ª via com linha digitável, código de barras, Pix e valor
   atualizado. Títulos por transferência mostram os dados bancários.
