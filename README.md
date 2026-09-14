@@ -30,7 +30,7 @@ Roteiro de demonstração:
 - **Itens e preços**: digite `dicroica` para ver o histórico de preços (último, médio ponderado, menor, maior).
 - **Meus boletos**: clique em "Ver boleto" para a 2ª via com linha digitável, código de barras, Pix e valor
   atualizado. Títulos por transferência mostram os dados bancários.
-- **Comunicações** (ou o sino): modelos de e-mail com o logo da Luminatti.
+- **Avisos por e-mail** (menu do avatar, canto inferior esquerdo): a pessoa escolhe quais avisos recebe, em tela cheia, agrupados por pedidos, notas, boletos e resumos.
 - `index.html?sessao=expirada` mostra o estado de sessão expirada. `Ctrl K` abre a busca global.
 
 ## Premissas adotadas (para validar com a diretoria)

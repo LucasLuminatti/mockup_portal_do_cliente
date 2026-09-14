@@ -603,32 +603,24 @@ tr.hist-ficha td{padding:0 13px 18px;background:var(--n-050);white-space:normal}
 .bol-transf .def{gap:10px 20px}
 @media(max-width:600px){.bol-pix{grid-template-columns:1fr}}
 
-/* ===== comunicacoes ===== */
-.com-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:14px;align-items:start}
-.com-grid .card{margin-top:0}
-#comPills{display:flex;gap:7px;flex-wrap:wrap}
-.com-meta{padding:12px 17px;border-bottom:1px solid var(--n-200);font-size:var(--fs-sm);color:var(--texto-mudo);display:grid;grid-template-columns:auto 1fr;gap:3px 12px}
-.com-meta b{color:var(--preto);font-weight:600}
-.com-fundo{background:var(--n-100);padding:28px 20px}
-.com-email{max-width:var(--email-w);margin:0 auto;background:var(--branco);border:1px solid var(--n-200);padding:32px 36px 28px;font-size:14px;line-height:1.55}
-.com-email img{height:36px;width:auto;display:block}
-.com-email .fio{height:3px;background:var(--serie-atual);width:56px;margin:18px 0 22px}
-.com-email h2{font-size:20px;font-weight:600;letter-spacing:-.01em;line-height:1.3;margin-bottom:12px}
-.com-email p{margin-bottom:12px}
-.com-email table{width:100%;border-collapse:collapse;margin:16px 0 18px;font-size:13px}
-.com-email td{padding:9px 0;border-top:1px solid var(--n-200)}
-.com-email tr:last-child td{border-bottom:1px solid var(--n-200)}
-.com-email td:last-child{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
-.com-email .cta{display:inline-block;background:var(--preto);color:var(--branco);font-weight:600;font-size:13px;padding:11px 18px;border-radius:7px;text-decoration:none}
-.com-email .linha{font-family:'Montserrat',Arial,sans-serif;font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;letter-spacing:.04em;background:var(--n-050);border:1px solid var(--n-200);padding:10px 12px;border-radius:6px;word-break:break-all;margin:8px 0 16px}
-.com-email .rodape{margin-top:28px;padding-top:14px;border-top:1px solid var(--n-200);font-size:11px;color:var(--texto-mudo);line-height:1.5}
-.com-prefs .card__body{display:flex;flex-direction:column;gap:2px}
-.com-pref{display:flex;align-items:center;gap:9px;padding:8px 6px;border-radius:6px;font-size:12.5px;font-weight:500;cursor:pointer;flex-wrap:wrap}
-.com-pref:hover{background:var(--n-050)}
-.com-pref input{accent-color:var(--preto);width:15px;height:15px}
-.com-pref .mudo{font-size:11px;margin-left:auto}
-@media(max-width:1200px){.com-grid{grid-template-columns:1fr}}
-@media(max-width:600px){.com-email{padding:22px 18px}}
+/* ===== avisos ===== */
+/* Avisos por e-mail — página de preferências em tela cheia (título, seções separadas por fio, controle à direita) */
+.avisos{max-width:860px}
+.avisos__cabeca{padding:4px 0 20px;border-bottom:1px solid var(--n-200)}
+.avisos__cabeca h2{font-size:var(--fs-xl);font-weight:700;letter-spacing:-.01em}
+.avisos__cabeca p{color:var(--cinza);font-size:var(--fs-body);margin-top:6px;max-width:62ch;line-height:1.5}
+.avisos__cabeca b{color:var(--preto);font-weight:600}
+.avisos__grupo{padding:20px 0 14px;border-bottom:1px solid var(--n-200)}
+.avisos__grupoTitulo{font-size:var(--fs-th);letter-spacing:var(--ls-caps);text-transform:uppercase;color:var(--texto-mudo);font-weight:700;margin-bottom:6px;padding:0 10px}
+.avisos__linha{display:flex;align-items:flex-start;gap:20px;padding:12px 10px;border-radius:var(--raio-sm);cursor:pointer}
+.avisos__linha:hover{background:var(--n-050)}
+.avisos__linha b{display:block;font-size:14.5px;font-weight:600;letter-spacing:-.005em}
+.avisos__linha p{color:var(--cinza);font-size:var(--fs-sm);margin-top:3px;max-width:58ch;line-height:1.5}
+.avisos__linha input{margin-left:auto;flex:none;width:18px;height:18px;accent-color:var(--preto);margin-top:3px;cursor:pointer}
+.avisos__linha:has(input:focus-visible){box-shadow:var(--foco)}
+.avisos__rodape{display:flex;align-items:center;gap:14px;padding:20px 10px 8px;flex-wrap:wrap}
+.avisos__rodape p{color:var(--texto-mudo);font-size:var(--fs-sm);line-height:1.5}
+@media(max-width:600px){.avisos__linha{gap:12px;padding:12px 6px}.avisos__grupoTitulo,.avisos__rodape{padding-left:6px;padding-right:6px}}
 
 </style>
 </head>
@@ -712,13 +704,9 @@ tr.hist-ficha td{padding:0 13px 18px;background:var(--n-050);white-space:normal}
     <nav class="nav" aria-label="Financeiro">
       <button class="nav__item" data-page="financeiro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 5v14M7 5v14M11 5v14M14 5v14M18 5v14M21 5v14"/></svg>Meus boletos<span class="nav__badge nav__badge--erro" id="badgeFin" hidden></span></button>
     </nav>
-    <div class="sidebar__section">Conta</div>
-    <nav class="nav" aria-label="Conta">
-      <button class="nav__item" data-page="comunicacoes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>Comunicações<span class="nav__badge" id="badgeCom" hidden></span></button>
-    </nav>
     <div class="sidebar__foot">
       <div class="user__menu" id="userMenu">
-        <button data-page="comunicacoes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>Avisos por e-mail</button>
+        <button data-page="avisos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>Avisos por e-mail</button>
         <button id="btnSair"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 17l5-5-5-5M15 12H3M21 3v18"/></svg>Sair</button>
       </div>
       <button class="user" id="btnUser" aria-haspopup="true">
@@ -881,27 +869,53 @@ tr.hist-ficha td{padding:0 13px 18px;background:var(--n-050);white-space:normal}
   <div id="finNota"></div>
 </section>
 
-<!-- ===== comunicacoes ===== -->
-<section class="page" id="page-comunicacoes">
-  <div class="com-grid">
-    <div>
-      <div class="filtros"><span class="filtros__label">Modelos de e-mail</span><div id="comPills"></div></div>
-      <div class="card">
-        <div class="com-meta" id="comMeta"></div>
-        <div class="com-fundo"><div class="com-email" id="comEmail"></div></div>
-      </div>
-      <div id="comNota"></div>
+<!-- ===== avisos ===== -->
+<section class="page" id="page-avisos">
+  <div class="avisos">
+    <div class="avisos__cabeca">
+      <h2>Avisos por e-mail</h2>
+      <p>Escolha o que você quer receber em <b id="avisosEmail"></b>. Cada aviso é um e-mail curto, com o logo da Luminatti e um botão que abre o portal já na tela certa.</p>
     </div>
-    <div class="card com-prefs">
-      <div class="card__head"><div><h3>Avisos por e-mail</h3><p>O que você quer receber em ana.ramos@leroymerlin.com.br</p></div></div>
-      <div class="card__body">
-        <label class="com-pref"><input type="checkbox" checked> Pedido aprovado</label>
-        <label class="com-pref"><input type="checkbox" checked> Nota fiscal emitida <span class="mudo">com XML e DANFE anexos</span></label>
-        <label class="com-pref"><input type="checkbox" checked> Boleto disponível <span class="mudo">com a linha digitável</span></label>
-        <label class="com-pref"><input type="checkbox" checked> Boleto vence em 5 dias</label>
-        <label class="com-pref"><input type="checkbox"> Resumo semanal das compras <span class="mudo">segunda-feira, 8h</span></label>
-        <button class="btn btn--sm btn--primary" style="margin-top:14px" data-toast="Preferências de aviso salvas.">Salvar preferências</button>
-      </div>
+
+    <div class="avisos__grupo">
+      <div class="avisos__grupoTitulo">Pedidos</div>
+      <label class="avisos__linha">
+        <div><b>Pedido aprovado</b><p>Quando a Luminatti aprovar um pedido de qualquer uma das suas lojas. Traz itens, total e previsão de faturamento.</p></div>
+        <input type="checkbox" checked data-aviso="pedido">
+      </label>
+    </div>
+
+    <div class="avisos__grupo">
+      <div class="avisos__grupoTitulo">Notas fiscais</div>
+      <label class="avisos__linha">
+        <div><b>Nota fiscal emitida</b><p>Assim que uma nota de compra for emitida para a sua loja. O XML e o DANFE vão em anexo e ficam guardados no portal.</p></div>
+        <input type="checkbox" checked data-aviso="nota">
+      </label>
+    </div>
+
+    <div class="avisos__grupo">
+      <div class="avisos__grupoTitulo">Boletos</div>
+      <label class="avisos__linha">
+        <div><b>Boleto disponível</b><p>Quando um boleto novo for registrado no banco. Vem com a linha digitável no corpo do e-mail e o PDF em anexo.</p></div>
+        <input type="checkbox" checked data-aviso="boleto">
+      </label>
+      <label class="avisos__linha">
+        <div><b>Boleto vence em 5 dias</b><p>Um lembrete por boleto, cinco dias antes do vencimento, com valor e link para a segunda via.</p></div>
+        <input type="checkbox" checked data-aviso="vencimento">
+      </label>
+    </div>
+
+    <div class="avisos__grupo">
+      <div class="avisos__grupoTitulo">Resumos</div>
+      <label class="avisos__linha">
+        <div><b>Resumo semanal das compras</b><p>Toda segunda-feira, às 8h: o que foi comprado na semana, o que está para chegar e os boletos dos próximos dias, somando todas as lojas.</p></div>
+        <input type="checkbox" data-aviso="resumo">
+      </label>
+    </div>
+
+    <div class="avisos__rodape">
+      <button class="btn btn--primary" id="avisosSalvar">Salvar preferências</button>
+      <p>Vale a partir do próximo aviso. Os avisos dentro do portal (sino) continuam sempre ligados.</p>
     </div>
   </div>
 </section>
@@ -1233,7 +1247,7 @@ const NOTIFICACOES = [
   {id:2, titulo:`Boleto da NF ${BOLETO_NOVO.nf} disponível`, sub:`${nomeLoja(BOLETO_NOVO.loja)} · vence em ${BOLETO_NOVO.venc} · ${brl(BOLETO_NOVO.valor)}`, quando:'ontem', lida:false, modelo:'boleto', acao:['financeiro',{abrir:BOLETO_NOVO.nf}]},
   {id:3, titulo:`Nota fiscal ${NOTA_RECENTE.num} emitida`, sub:`${nomeLoja(NOTA_RECENTE.loja)} · pedido ${NOTA_RECENTE.pedido} · ${brl(NOTA_RECENTE.total)}`, quando:NOTA_RECENTE.data.slice(0,5), lida:true, modelo:'nota', acao:['notas',{abrir:NOTA_RECENTE.num}]},
   {id:4, titulo:`Boleto da NF ${BOLETO_PROXIMO.nf} vence em ${diasEntre(HOJE_STR,BOLETO_PROXIMO.venc)} ${diasEntre(HOJE_STR,BOLETO_PROXIMO.venc)===1?'dia':'dias'}`, sub:`${nomeLoja(BOLETO_PROXIMO.loja)} · ${brl(BOLETO_PROXIMO.valor)}`, quando:'hoje', lida:true, modelo:'boleto', acao:['financeiro',{abrir:BOLETO_PROXIMO.nf}]},
-  {id:5, titulo:'Seu acesso ao portal foi criado', sub:USUARIO.email, quando:'20/08', lida:true, modelo:'acesso', acao:['comunicacoes',{modelo:'acesso'}]},
+  {id:5, titulo:'Seu acesso ao portal foi criado', sub:USUARIO.email, quando:'20/08', lida:true, modelo:'acesso', acao:['avisos',{}]},
 ];
 
 /* ---- totais mensais: SOMA das notas (2025–2026) ou tabela (2024) ---- */
@@ -1435,7 +1449,7 @@ function desenharNotifs(){
   const l = NOTIFICACOES;
   $('#notifLista').innerHTML = l.length ? l.map(n=>`<button class="notif__item ${n.lida?'':'is-nova'}" data-notif="${n.id}">
       <span class="notif__ponto"></span>
-      <span class="notif__txt"><span class="notif__t">${esc(n.titulo)}</span><span class="notif__sub">${esc(n.sub)}<button class="link" data-notif-email="${n.id}">Ver e-mail</button></span></span>
+      <span class="notif__txt"><span class="notif__t">${esc(n.titulo)}</span><span class="notif__sub">${esc(n.sub)}</span></span>
       <span class="notif__quando">${esc(n.quando)}</span></button>`).join('')
     : '<div class="vazio vazio--compacto"><b>Sem novidades por enquanto.</b><span>Avisamos aqui quando um pedido for aprovado, uma nota for emitida ou um boleto vencer.</span></div>';
 }
@@ -1448,12 +1462,10 @@ $('#btnSino').onclick = e=>{
   pop.classList.add('is-on');
 };
 $('#notifLista').addEventListener('click', e=>{
-  const em = e.target.closest('[data-notif-email]');
   const it = e.target.closest('[data-notif]');
   if(!it) return;
   const n = NOTIFICACOES.find(x=>x.id===+it.dataset.notif); n.lida = true; atualizarBadges();
   $('#popNotif').classList.remove('is-on');
-  if(em){ e.stopPropagation(); irPara('comunicacoes',{modelo:n.modelo}); return; }
   irPara(n.acao[0], n.acao[1]);
 });
 $('#notifLerTodas').onclick = ()=>{ NOTIFICACOES.forEach(n=>n.lida=true); atualizarBadges(); desenharNotifs(); toast('Todas as notificações marcadas como lidas.'); };
@@ -2257,41 +2269,22 @@ $('#finLimpar').onclick = ()=>{ FIN.busca=''; $('#finBusca').value=''; finRender
 $('#finTabela').addEventListener('click', e=>{ if(e.target.closest('button')) return; const tr=e.target.closest('tr[data-titulo]'); if(tr){ const [nf,p]=tr.dataset.titulo.split('|'); abrirDrawerBoleto(nf,+p); } });
 $('#finTabela').addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && e.target.matches('tr[data-titulo]')){ e.preventDefault(); const [nf,p]=e.target.dataset.titulo.split('|'); abrirDrawerBoleto(nf,+p); } });
 
-/* ===== comunicacoes ===== */
-/* Comunicações — prévia dos e-mails transacionais com o logo da Luminatti + preferências de aviso */
-const COM = {modelo:'pedido'};
-const LOGO_EMAIL = $('.sidebar__brand img').getAttribute('src');
-function comModelos(){
-  const p = PED_APROV_SJ, n = NOTA_RECENTE, t = BOLETO_NOVO;
-  return {
-    acesso:{rot:'Seu acesso ao portal', assunto:'Seu acesso ao Portal do Cliente Luminatti', titulo:'Seu acesso ao portal está pronto', corpo:`Olá, ${USUARIO.nome.split(' ')[0]}. Criamos seu acesso ao Portal do Cliente da Luminatti para as lojas ${LOJAS.map(l=>l.nome).join(', ')}.`,
-      linhas:[['Usuário', USUARIO.email],['Lojas', `${LOJAS.length} lojas · consolidado`]], cta:'Criar minha senha', extra:'<p>O link vale por 48 horas. Depois disso, use “Esqueci minha senha” na tela de entrada.</p>'},
-    pedido:{rot:'Pedido aprovado', assunto:`Pedido ${p.num} aprovado — ${nomeLoja(p.loja)}`, titulo:`Seu pedido ${p.num} foi aprovado`, corpo:`Olá, ${USUARIO.nome.split(' ')[0]}. A Luminatti aprovou o pedido da loja ${nomeLoja(p.loja)} enviado em ${p.data}.`,
-      linhas:[['Pedido', p.num],['Itens', `${p.itens.length}`],['Total', brl(pedidoTotal(p))],['Previsão de faturamento', p.previsao||'a confirmar']], cta:'Acompanhar no portal'},
-    nota:{rot:'Nota fiscal emitida', assunto:`Nota fiscal ${n.num} emitida — ${nomeLoja(n.loja)}`, titulo:`Nota fiscal ${n.num} emitida`, corpo:`Olá, ${USUARIO.nome.split(' ')[0]}. Emitimos a nota fiscal do pedido ${n.pedido} para a loja ${nomeLoja(n.loja)}. O XML e o DANFE vão em anexo e ficam no portal.`,
-      linhas:[['Nota fiscal', n.num],['Emitida em', n.data],['Itens', `${n.itens.length}`],['Total', brl(n.total)],['Pagamento', `${n.forma} · ${n.cond}`]], cta:'Ver a nota no portal', anexos:'DANFE-'+n.num+'.pdf · NFe-'+n.num+'.xml'},
-    boleto:{rot:'Boleto disponível', assunto:`Boleto da NF ${t.nf} disponível — vence em ${t.venc}`, titulo:`Boleto da nota ${t.nf} disponível`, corpo:`Olá, ${USUARIO.nome.split(' ')[0]}. O boleto da nota fiscal ${t.nf} (loja ${nomeLoja(t.loja)}) já está registrado. Você pode pagar pela linha digitável abaixo ou por Pix no portal.`,
-      linhas:[['Vencimento', t.venc],['Valor', brl(t.valor)],['Beneficiário', EMPRESAS_EMISSORAS[t.emissora].nome]], linhaDigitavel:t.boleto.linhaDigitavel, cta:'Ver boleto no portal', anexos:'boleto-'+t.nf+'.pdf'},
-  };
+/* ===== avisos ===== */
+/* Avisos por e-mail — preferências do usuário (o que receber e quando) */
+const AVISOS_PADRAO = {pedido:true, nota:true, boleto:true, vencimento:true, resumo:false};
+let avisosPref = Object.assign({}, AVISOS_PADRAO);
+try{ const s = JSON.parse(localStorage.getItem('pc.avisos')||'null'); if(s && typeof s==='object') avisosPref = Object.assign({}, AVISOS_PADRAO, s); }catch(e){}
+function avisosRender(){
+  $('#avisosEmail').textContent = USUARIO.email;
+  $$('#page-avisos [data-aviso]').forEach(c=>{ c.checked = !!avisosPref[c.dataset.aviso]; });
 }
-function comRender(){
-  const M = comModelos(); const m = M[COM.modelo] || M.pedido;
-  $('#comPills').innerHTML = Object.entries(M).map(([k,x])=>`<button class="pill ${k===COM.modelo?'is-on':''}" data-modelo="${k}">${x.rot}</button>`).join('');
-  $('#comMeta').innerHTML = `<span>De</span><b>Luminatti &lt;portal@luminattiled.com.br&gt;</b><span>Para</span><b>${esc(USUARIO.email)}</b><span>Assunto</span><b>${esc(m.assunto)}</b>${m.anexos?`<span>Anexos</span><b>${esc(m.anexos)}</b>`:''}`;
-  $('#comEmail').innerHTML = `
-    <img src="${LOGO_EMAIL}" alt="Luminatti">
-    <div class="fio"></div>
-    <h2>${esc(m.titulo)}</h2>
-    <p>${esc(m.corpo)}</p>
-    <table>${m.linhas.map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join('')}</table>
-    ${m.linhaDigitavel ? `<p style="margin-bottom:4px">Linha digitável</p><div class="linha">${m.linhaDigitavel}</div>` : ''}
-    ${m.extra||''}
-    <a class="cta" href="#" data-toast="No e-mail real, este botão abre o portal já na tela certa.">${esc(m.cta)}</a>
-    <div class="rodape">Danuri Importação e Exportação Ltda · Itajaí/SC<br>Você recebe este e-mail por ter acesso ao Portal do Cliente Luminatti. Para mudar os avisos, acesse Comunicações no portal.</div>`;
-  $('#comNota').innerHTML = notaSPS('todo e-mail do portal sai com o <b>logo da Luminatti</b> (PNG hospedado, com alt), remetente "Luminatti &lt;portal@luminattiled.com.br&gt;", fio amarelo, um título, um parágrafo, uma tabela e um botão. Sem ilustração genérica. Versão texto simples como fallback. Os anexos (DANFE/XML/boleto) são os mesmos arquivos do portal.');
-}
-REG.comunicacoes = {titulo:'Comunicações', render(params){ if(params && params.modelo) COM.modelo = params.modelo; comRender(); }};
-$('#comPills').addEventListener('click', e=>{ const b=e.target.closest('[data-modelo]'); if(b){ COM.modelo=b.dataset.modelo; comRender(); } });
+REG.avisos = {titulo:'Conta', render(){ avisosRender(); }};
+$('#avisosSalvar').onclick = ()=>{
+  $$('#page-avisos [data-aviso]').forEach(c=>{ avisosPref[c.dataset.aviso] = c.checked; });
+  try{ localStorage.setItem('pc.avisos', JSON.stringify(avisosPref)); }catch(e){}
+  const n = Object.values(avisosPref).filter(Boolean).length;
+  toast(n ? `Preferências salvas: ${n} ${n===1?'aviso ligado':'avisos ligados'}.` : 'Preferências salvas: nenhum aviso por e-mail.');
+};
 
 
 /* =====================================================================
