@@ -611,6 +611,7 @@ tr.hist-ficha td{padding:0 13px 18px;background:var(--n-050);white-space:normal}
 .avisos__cabeca p{color:var(--cinza);font-size:var(--fs-body);margin-top:6px;max-width:62ch;line-height:1.5}
 .avisos__cabeca b{color:var(--preto);font-weight:600}
 .avisos__grupo{padding:20px 0 14px;border-bottom:1px solid var(--n-200)}
+.avisos__grupo--fim{border-bottom:0}
 .avisos__grupoTitulo{font-size:var(--fs-th);letter-spacing:var(--ls-caps);text-transform:uppercase;color:var(--texto-mudo);font-weight:700;margin-bottom:6px;padding:0 10px}
 .avisos__linha{display:flex;align-items:flex-start;gap:20px;padding:12px 10px;border-radius:var(--raio-sm);cursor:pointer}
 .avisos__linha:hover{background:var(--n-050)}
@@ -618,9 +619,14 @@ tr.hist-ficha td{padding:0 13px 18px;background:var(--n-050);white-space:normal}
 .avisos__linha p{color:var(--cinza);font-size:var(--fs-sm);margin-top:3px;max-width:58ch;line-height:1.5}
 .avisos__linha input{margin-left:auto;flex:none;width:18px;height:18px;accent-color:var(--preto);margin-top:3px;cursor:pointer}
 .avisos__linha:has(input:focus-visible){box-shadow:var(--foco)}
-.avisos__rodape{display:flex;align-items:center;gap:14px;padding:20px 10px 8px;flex-wrap:wrap}
-.avisos__rodape p{color:var(--texto-mudo);font-size:var(--fs-sm);line-height:1.5}
-@media(max-width:600px){.avisos__linha{gap:12px;padding:12px 6px}.avisos__grupoTitulo,.avisos__rodape{padding-left:6px;padding-right:6px}}
+/* confirmação ao marcar/desmarcar */
+.av-conf{position:fixed;inset:0;background:rgba(29,29,27,.38);display:flex;align-items:center;justify-content:center;padding:16px;z-index:80}
+.av-conf[hidden]{display:none}
+.av-conf__card{background:var(--branco);border-radius:var(--raio);box-shadow:var(--sombra);width:100%;max-width:440px;padding:22px 22px 18px;border-top:3px solid var(--serie-atual)}
+.av-conf__card h3{font-size:17px;font-weight:700;letter-spacing:-.01em;line-height:1.3}
+.av-conf__card p{color:var(--cinza);font-size:var(--fs-body);line-height:1.5;margin-top:8px}
+.av-conf__acoes{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+@media(max-width:600px){.avisos__linha{gap:12px;padding:12px 6px}.avisos__grupoTitulo{padding-left:6px;padding-right:6px}.av-conf__acoes{flex-direction:column-reverse}.av-conf__acoes .btn{width:100%}}
 
 </style>
 </head>
@@ -874,7 +880,7 @@ tr.hist-ficha td{padding:0 13px 18px;background:var(--n-050);white-space:normal}
   <div class="avisos">
     <div class="avisos__cabeca">
       <h2>Avisos por e-mail</h2>
-      <p>Escolha o que você quer receber em <b id="avisosEmail"></b>. Cada aviso é um e-mail curto, com o logo da Luminatti e um botão que abre o portal já na tela certa.</p>
+      <p>Escolha o que você quer receber em <b id="avisosEmail"></b>. Cada aviso é um e-mail curto, com o logo da Luminatti e um botão que abre o portal já na tela certa. Cada mudança vale a partir do próximo aviso.</p>
     </div>
 
     <div class="avisos__grupo">
@@ -905,17 +911,23 @@ tr.hist-ficha td{padding:0 13px 18px;background:var(--n-050);white-space:normal}
       </label>
     </div>
 
-    <div class="avisos__grupo">
+    <div class="avisos__grupo avisos__grupo--fim">
       <div class="avisos__grupoTitulo">Resumos</div>
       <label class="avisos__linha">
         <div><b>Resumo semanal das compras</b><p>Toda segunda-feira, às 8h: o que foi comprado na semana, o que está para chegar e os boletos dos próximos dias, somando todas as lojas.</p></div>
         <input type="checkbox" data-aviso="resumo">
       </label>
     </div>
+  </div>
 
-    <div class="avisos__rodape">
-      <button class="btn btn--primary" id="avisosSalvar">Salvar preferências</button>
-      <p>Vale a partir do próximo aviso. Os avisos dentro do portal (sino) continuam sempre ligados.</p>
+  <div class="av-conf" id="avConf" role="dialog" aria-modal="true" aria-labelledby="avConfTitulo" hidden>
+    <div class="av-conf__card">
+      <h3 id="avConfTitulo"></h3>
+      <p id="avConfTexto"></p>
+      <div class="av-conf__acoes">
+        <button class="btn btn--ghost" id="avConfNao">Cancelar</button>
+        <button class="btn btn--primary" id="avConfSim">Confirmar</button>
+      </div>
     </div>
   </div>
 </section>
@@ -2270,21 +2282,50 @@ $('#finTabela').addEventListener('click', e=>{ if(e.target.closest('button')) re
 $('#finTabela').addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && e.target.matches('tr[data-titulo]')){ e.preventDefault(); const [nf,p]=e.target.dataset.titulo.split('|'); abrirDrawerBoleto(nf,+p); } });
 
 /* ===== avisos ===== */
-/* Avisos por e-mail — preferências do usuário (o que receber e quando) */
+/* Avisos por e-mail — preferências do usuário; cada mudança pede confirmação e vale na hora */
 const AVISOS_PADRAO = {pedido:true, nota:true, boleto:true, vencimento:true, resumo:false};
 let avisosPref = Object.assign({}, AVISOS_PADRAO);
 try{ const s = JSON.parse(localStorage.getItem('pc.avisos')||'null'); if(s && typeof s==='object') avisosPref = Object.assign({}, AVISOS_PADRAO, s); }catch(e){}
+let avisoPendente = null;   // {chave, novo, el, rotulo} enquanto a confirmação está aberta
+
 function avisosRender(){
   $('#avisosEmail').textContent = USUARIO.email;
   $$('#page-avisos [data-aviso]').forEach(c=>{ c.checked = !!avisosPref[c.dataset.aviso]; });
 }
 REG.avisos = {titulo:'Conta', render(){ avisosRender(); }};
-$('#avisosSalvar').onclick = ()=>{
-  $$('#page-avisos [data-aviso]').forEach(c=>{ avisosPref[c.dataset.aviso] = c.checked; });
-  try{ localStorage.setItem('pc.avisos', JSON.stringify(avisosPref)); }catch(e){}
-  const n = Object.values(avisosPref).filter(Boolean).length;
-  toast(n ? `Preferências salvas: ${n} ${n===1?'aviso ligado':'avisos ligados'}.` : 'Preferências salvas: nenhum aviso por e-mail.');
-};
+
+function abrirConfAviso(){
+  const {novo, rotulo} = avisoPendente;
+  $('#avConfTitulo').textContent = novo ? `Ligar o aviso "${rotulo}"?` : `Desligar o aviso "${rotulo}"?`;
+  $('#avConfTexto').textContent = novo
+    ? `Você passa a receber este e-mail em ${USUARIO.email} a partir do próximo aviso.`
+    : `Você deixa de receber este e-mail. Os avisos dentro do portal, no sino, continuam.`;
+  $('#avConf').hidden = false;
+  $('#avConfSim').focus();
+}
+function fecharConfAviso(confirma){
+  if(!avisoPendente) return;
+  const {chave, novo, el} = avisoPendente;
+  if(confirma){
+    avisosPref[chave] = novo;
+    try{ localStorage.setItem('pc.avisos', JSON.stringify(avisosPref)); }catch(e){}
+    toast(novo ? 'Aviso ligado.' : 'Aviso desligado.');
+  } else {
+    el.checked = !novo;
+  }
+  avisoPendente = null;
+  $('#avConf').hidden = true;
+  el.focus();
+}
+$('#page-avisos').addEventListener('change', e=>{
+  const c = e.target.closest('[data-aviso]'); if(!c) return;
+  avisoPendente = {chave:c.dataset.aviso, novo:c.checked, el:c, rotulo:c.closest('.avisos__linha').querySelector('b').textContent};
+  abrirConfAviso();
+});
+$('#avConfSim').onclick = ()=>fecharConfAviso(true);
+$('#avConfNao').onclick = ()=>fecharConfAviso(false);
+$('#avConf').addEventListener('click', e=>{ if(e.target===e.currentTarget) fecharConfAviso(false); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && avisoPendente) fecharConfAviso(false); });
 
 
 /* =====================================================================
