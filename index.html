@@ -1267,7 +1267,7 @@ const NOTIFICACOES = [
 function totalMes(a, m, loja){
   const lojas = !loja || loja==='todas' ? LOJAS.map(l=>l.cod) : loja==='sel' ? EST.sel : [loja];
   if(a===2024) return COMPRAS_2024.filter(c=>c.m===m && lojas.includes(c.loja)).reduce((s,c)=>s+c.valor,0);
-  return Math.round(NOTAS.filter(n=>n.a===a && n.m===m && lojas.includes(n.loja)).reduce((s,n)=>s+n.total,0)*100)/100;
+  return Math.round(NOTAS.filter(n=>n.a===a && n.m===m && lojas.includes(n.loja)).reduce((s,n)=>s+(n.gasto!=null?n.gasto:n.total),0)*100)/100;
 }
 
 
