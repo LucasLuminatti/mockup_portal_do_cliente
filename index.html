@@ -526,6 +526,7 @@ button.dash-loja__linha:hover{background:var(--n-100)}
   .dash-top .lista__item{border-right:none;border-bottom:1px solid var(--n-200)}
 }
 @media(max-width:600px){.dash-placar__num--atual{font-size:32px}.dash-placar{flex-direction:column;align-items:flex-start;gap:12px}}
+.dash-loja__mais{margin:12px 0 4px;width:100%;justify-content:center}
 
 /* ===== pedidos ===== */
 .ped-num{font-weight:700}
@@ -1768,7 +1769,8 @@ document.addEventListener('click', e=>{
 
 /* ===== dash ===== */
 /* Visão geral — comparativo período × período anterior (elemento memorável), por loja, top itens, zona "Hoje" */
-const DASH = {periodo:'y2025x2026', custom:{ini:{a:2026,m:3},fim:{a:2026,m:8}}, verNumeros:false};
+const DASH = {periodo:'y2025x2026', custom:{ini:{a:2026,m:3},fim:{a:2026,m:8}}, verNumeros:false, lojasTodas:false};
+const DASH_LOJAS_VISIVEIS = 5;   // acima disso, o card "Por loja" mostra as maiores e um "Ver mais"
 
 function dashTopItens(meses, loja){
   const lojas = lojasAtivas().map(l=>l.cod);
@@ -1838,10 +1840,13 @@ function dashRender(){
     const linhas = lojasAtivas().map(l=>({l, atu:somaMeses(per.atual,l.cod), ant:somaMeses(per.anterior,l.cod)})).sort((a,b)=>b.atu-a.atu);
     const max = Math.max(1,...linhas.flatMap(x=>[x.atu,x.ant]));
     $('#dashPorLojaSub').textContent = `${esc(nomeAtu)} × ${esc(nomeAnt)} · da maior para a menor · clique para ver só uma loja`;
-    $('#dashPorLoja').innerHTML = `<div class="dash-loja">${linhas.map(x=>`<button class="dash-loja__linha" data-loja-sel="${x.l.cod}">
+    const escondidas = !DASH.lojasTodas && linhas.length > DASH_LOJAS_VISIVEIS ? linhas.length - DASH_LOJAS_VISIVEIS : 0;
+    const visiveis = escondidas ? linhas.slice(0, DASH_LOJAS_VISIVEIS) : linhas;
+    $('#dashPorLoja').innerHTML = `<div class="dash-loja">${visiveis.map(x=>`<button class="dash-loja__linha" data-loja-sel="${x.l.cod}">
         <span class="dash-loja__nome">${esc(x.l.nome)}<small>${esc(x.l.cidadeUF)}</small></span>
         <span class="dash-loja__barras"><i style="width:${x.atu/max*100}%"></i><i class="ant" style="width:${x.ant/max*100}%"></i></span>
         <span class="dash-loja__vals">${brlCurto(x.atu)}<small>${x.ant?brlCurto(x.ant):'—'}</small>${x.ant?' '+tend((x.atu-x.ant)/x.ant*100):''}</span></button>`).join('')}</div>
+      ${escondidas ? `<button class="btn btn--sm btn--ghost dash-loja__mais" data-lojas-mais>Ver mais ${escondidas} ${escondidas===1?'loja':'lojas'}</button>` : (linhas.length > DASH_LOJAS_VISIVEIS ? `<button class="btn btn--sm btn--ghost dash-loja__mais" data-lojas-mais>Ver só as ${DASH_LOJAS_VISIVEIS} maiores</button>` : '')}
       <div class="legenda"><span><i style="background:var(--serie-atual)"></i>${esc(nomeAtu)}</span><span><i style="background:var(--serie-anterior)"></i>${esc(nomeAnt)}</span><span class="mudo">Soma das ${lojasAtivas().length} lojas = ${brl(totAtu)}</span>${EST.loja==='sel' ? ` <button class="link" data-loja-sel="todas" style="font-size:11px">Ver todas as ${LOJAS.length}</button>` : ''}</div>`;
   } else {
     $('#dashPorLojaSub').textContent = LOJAS.length>1 ? 'Você está vendo uma loja' : 'Este cliente tem uma única loja';
@@ -1886,6 +1891,7 @@ $('#dashAplicar').onclick = ()=>{
 };
 $('#dashVerNumeros').onclick = ()=>{ DASH.verNumeros = !DASH.verNumeros; dashRender(); };
 $('#page-dash').addEventListener('click', e=>{
+  const mais = e.target.closest('[data-lojas-mais]'); if(mais){ DASH.lojasTodas = !DASH.lojasTodas; dashRender(); if(!DASH.lojasTodas) $('#dashPorLoja').scrollIntoView({block:'nearest'}); return; }
   const l = e.target.closest('[data-loja-sel]'); if(l){ setLoja(l.dataset.lojaSel); return; }
   const col = e.target.closest('.grafico rect.col[data-mes]'); if(col && col.dataset.mes){ const [a,m]=col.dataset.mes.split('-').map(Number); irPara('notas',{mes:{a,m}}); }
 });
